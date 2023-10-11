@@ -1,0 +1,74 @@
+{
+    "es": {
+        "Titulo": "Luces Fuera",
+        "Idioma": "Español",
+        "Carga": { "Carga1": "Cargando", "Carga2": "Cargando.", "Carga3": "Cargando..", "Carga4": "Cargando..." },
+        "MenuInicial": { "Titulo": "Luces Fuera", "Opcion1": "Empezar", "Opcion2": "Opciones", "Opcion3": "Salir" },
+        "Opciones": { "Titulo": "Opciones", "Opcion1": "Idioma", "Opcion2": "Volumen" },
+        "Niveles": {
+            "Titulo": "Luces Fuera - Niveles",
+            "Opcion1": "Nivel 1",
+            "Opcion2": "Nivel 2",
+            "Opcion3": "Nivel 3",
+            "opcion4": "Salir"
+        },
+        "OpcionesLvl": {
+            "Titulo": "Pausa",
+            "Reanudar": "Reanudar",
+            "Reiniciar": "Reiniciar",
+            "Salir": "Salir"
+        },
+        "Juego": {
+            "Medidor": "Medidor: ",
+            "Ganaste": "Ganaste!",
+            "Perdiste": "Perdiste!",
+            "Tiempo": "Tiempo: ",
+            "Preciona": "Presiona cualquier tecla para continuar"
+        },
+        "Nivel1": {
+            "Titulo": "Nivel 1"
+        },
+        "Nivel2": {
+            "Titulo": "Nivel 2"
+        },
+        "Nivel3": {
+            "Titulo": "Nivel 3"
+        }
+    },
+    "en": {
+        "Titulo": "Lights Out",
+        "Idioma": "English",
+        "Carga": { "Carga1": "Loading", "Carga2": "Loading.", "Carga3": "Loading..", "Carga4": "Loading..." },
+        "MenuInicial": { "Titulo": "Lights Out", "Opcion1": "Start", "Opcion2": "Options", "Opcion3": "Exit" },
+        "Opciones": { "Titulo": "Options", "Opcion1": "Language", "Opcion2": "Volume" },
+        "Niveles": {
+            "Titulo": "Lights Out - Levels",
+            "Opcion1": "Level 1",
+            "Opcion2": "Level 2",
+            "Opcion3": "Level 3",
+            "opcion4": "Exit"
+        },
+        "OpcionesLvl": {
+            "Titulo": "Pause",
+            "Reanudar": "Resume",
+            "Reiniciar": "Restart",
+            "Salir": "Exit"
+        },
+        "Juego": {
+            "Medidor": "Meter: ",
+            "Ganaste": "You Win!",
+            "Perdiste": "You Lose!",
+            "Tiempo": "Time: ",
+            "Preciona": "Press any key to continue"
+        },
+        "Nivel1": {
+            "Titulo": "Level 1"
+        },
+        "Nivel2": {
+            "Titulo": "Level 2"
+        },
+        "Nivel3": {
+            "Titulo": "Level 3"
+        }
+    }
+}
