@@ -11,6 +11,8 @@ imgs = []
 cuentaPasos = 0
 px = 70
 py = 40
+ultimaFrase = 0
+tiempoPasado = 0
 
 # funcion para obtener las pausas de la barra de carga
 def obtenerPausas(maximo):
@@ -44,10 +46,18 @@ def pintarPersonaje(SCREEN, porcentaje, accion):
         SCREEN.blit(imgs["derecha"][cuentaPasos // 1], (int(px + porcentaje), int(py)))
         cuentaPasos += 1
 
+# Función que pinta las palabras en la pantalla
+def frases(configJuego):
+    # obtenemos un unmero para la elejir la frase aleatoria del 1 al 6
+    num = random.randint(1, 6)
+    return num
+
 # funcion para la pantalla de carga
 def pantalla_de_carga(SCREEN, configJuego):
     # inicializamos nuestros parametros
     global imgs
+    global ultimaFrase
+    global tiempoPasado
     imgs = imgs_carga(configJuego["personaje"])
     reloj = pygame.time.Clock()
     porcentaje = 0
@@ -57,6 +67,7 @@ def pantalla_de_carga(SCREEN, configJuego):
     detener = True
     segundoAnterior = 0
     i = 1
+    num = frases(configJuego)
     
     # generamos los texto a usar
     Text_text = get_font(20).render(idioma[configJuego["Idioma"]]["Juego"]["Preciona"], True, "#ffffff")
@@ -68,6 +79,7 @@ def pantalla_de_carga(SCREEN, configJuego):
 
         if segundero != segundoAnterior:
             segundoAnterior = segundero
+            tiempoPasado += 1
             pausa = False
             if i == 4:
                 i = 1
@@ -79,6 +91,15 @@ def pantalla_de_carga(SCREEN, configJuego):
         pygame.draw.rect(SCREEN, "WHITE", (100, 100, 1000, 50))
         pygame.draw.rect(SCREEN, "GREEN", (100, 100, 0 + porcentaje, 50))
 
+        if ultimaFrase + 7 <= tiempoPasado: # si han pasado 5 segundos desde la ultima frase, pintamos una nueva
+            num = frases(configJuego)
+            ultimaFrase = tiempoPasado
+
+        # generamos el texto a usar
+        for c in range(1, len(idioma[configJuego["Idioma"]][f"Frases"][f"frase{num}"]) + 1):
+            frase = get_font(20).render(idioma[configJuego["Idioma"]][f"Frases"][f"frase{num}"][f"{c}"], True, "#ffffff")
+            frase_rect = frase.get_rect(center=(640, 250 + (c * 30)))
+            SCREEN.blit(frase, frase_rect)
 
         # Actualizamos el porcentaje
         if porcentaje <= maximo:
