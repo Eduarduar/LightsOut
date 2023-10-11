@@ -33,6 +33,39 @@
         },
         "Nivel3": {
             "Titulo": "Nivel 3"
+        },
+        "Frases": {
+            "frase1": {
+                "1": "Explora un mundo donde cada interruptor",
+                "2": "cuenta. Únete a Finn y reduce el consumo",
+                "3": "de luz. ¡Juntos, podemos iluminar un",
+                "4": "futuro sostenible!"
+            },
+            "frase2": {
+                "1": "Necesitamos que apagues las luces y",
+                "2": "protejas nuestro mundo. ¿Estás listo para",
+                "3": "el desafío? ¡Únete y sé parte del cambio!"
+            },
+            "frase3": {
+                "1": "Estate alerta para ahorrar energía. ¿Estás",
+                "2": "listo para unirte a él y marcar la",
+                "3": "diferencia?"
+            },
+            "frase4": {
+                "1": "Cada interruptor apagado es un paso",
+                "2": "hacia un futuro más brillante y",
+                "3": "sostenible. ¡Marca la diferencia en el",
+                "4": "juego y en la vida real!"
+            },
+            "frase5": {
+                "1": "Recuerda que al cuidar la energía",
+                "2": "eléctrica, también estás cuidando tu",
+                "3": "dinero"
+            },
+            "frase6": {
+                "1": "No dejes que el medidor de energía",
+                "2": "alcance su máximo..."
+            }
         }
     },
     "en": {
@@ -69,6 +102,39 @@
         },
         "Nivel3": {
             "Titulo": "Level 3"
+        },
+        "Frases": {
+            "frase1": {
+                "1": "Explore a world where every switch",
+                "2": "counts. Join Finn and reduce energy",
+                "3": "consumption. Together, we can light",
+                "4": "up a sustainable future!"
+            },
+            "frase2": {
+                "1": "We need you to turn off the lights and",
+                "2": "protect our world. Are you ready for",
+                "3": "the challenge? Join and be part of",
+                "4": "the change!"
+            },
+            "frase3": {
+                "1": "Be alert to save energy. Are you ready",
+                "2": "to join him and make a difference?"
+            },
+            "frase4": {
+                "1": "Every switch turned off is a step",
+                "2": "towards a brighter and sustainable",
+                "3": "future. Make a difference in the game",
+                "4": "and in real life!"
+            },
+            "frase5": {
+                "1": "Remember that by taking care of",
+                "2": "electricity, you are also taking care",
+                "3": "of your money"
+            },
+            "frase6": {
+                "1": "Don't let the energy meter reach its",
+                "2": "maximum..."
+            }
         }
     }
 }
