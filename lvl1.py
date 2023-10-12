@@ -25,6 +25,7 @@ color = ()
 fps = 0
 powerUps = {}
 imgs = {}
+teclaEstado = 1
 
 quietoD = ""
 quietoI = ""
@@ -355,6 +356,25 @@ def moverPersonaje(SCREEN):
             infoPersonaje["quieto"] = True
             pintarPersonaje(SCREEN, accion="quieto")
 
+# función pinta las teclas que se puede usar
+def pintarTeclas(SCREEN):
+    global infoPersonaje
+    global segundoAccion
+    global teclaEstado
+    global focos
+    for foco in focos["focosEstado"].items(): # recorremos los focos
+        if foco[1]["estado"] != 0 and foco[1]["estado"] != 4 and infoPersonaje["piso"] == foco[1]["piso"]: # verificamos si el foco esta apagado
+            if infoPersonaje["PX"] >= foco[1]["apagadorX1"] - infoPersonaje["ancho"] and infoPersonaje["PX"] <= foco[1]["apagadorX2"] + infoPersonaje["ancho"]:
+                SCREEN.blit(imgs[f"espacio{teclaEstado}"], (int(infoPersonaje["PX"]) - 20, int(infoPersonaje["PY"]) + 80))
+                teclaEstado += 1
+
+    if (infoPersonaje["PX"] >= 205 and infoPersonaje["PX"] <= 252) or (infoPersonaje["ancho"] + infoPersonaje["PX"] >= 205 and infoPersonaje["PX"] + infoPersonaje["ancho"] <= 252):
+        SCREEN.blit(imgs[f"w{teclaEstado}"], (int(infoPersonaje["PX"]), int(infoPersonaje["PY"]) - 50))
+        teclaEstado += 1
+
+    if teclaEstado > 2:
+        teclaEstado = 1
+
 # pinta las puertas abiertas
 def pintarPuerta(SCEEN):
     global focos
@@ -613,6 +633,8 @@ def pantalla_lvl1(SCREEN , configJuego, LvlsInfo, elementosFondo):
         pintarFocos(SCREEN, segundero) # actualizamos los estados de los focos
 
         pintarPuerta(SCREEN) # pintamos las puertas
+
+        pintarTeclas(SCREEN) # pintamos las teclas
 
         moverPersonaje(SCREEN) # movemos al personaje
 

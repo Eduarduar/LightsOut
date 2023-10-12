@@ -32,11 +32,11 @@ def opciones(SCREEN , configJuego, LvlsInfo, elementosFondo):
         OPTIONS_BACK = Button(image=None, pos=(50,50), text_input="←", font=get_font(75), base_color="White", hovering_color="Red")
 
         # Volumen --------------------------------------
-        #generamos el texto de las opciones
         txtVolumen = get_font(45).render(idioma[configJuego["Idioma"]]["Opciones"]["Opcion2"], True, "White")
         SCREEN.blit(txtVolumen, (100, 450))
         
         #imprimimos el porcentaje del volumen actual
+        #generamos el texto de las opciones
         txtPorcentaje = get_font(45).render(str(int(configJuego["Volumen"] * 100)) + "%", True, "White")
         SCREEN.blit(txtPorcentaje, (850, 450))
         btnVolumen1 = Button(image=pygame.transform.scale(imgs["caja"], (75, 50)), pos=(1100, 450), text_input="↑", font=get_font(45), base_color="White", hovering_color="Green")

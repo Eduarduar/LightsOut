@@ -3,8 +3,6 @@ from menu_principal import menu_principal
 from intro import intro
 
 print("Lights Out - v0.1.0")
-# convertimos el input a mayusculas para evitar errores
-sexo = input("Elija el sexo (H/M): ")
 
 configJuego = {
     "Idioma": "es",
@@ -13,6 +11,9 @@ configJuego = {
     "historia": True,
     "personaje": "mujer"
 }
+
+# convertimos el input a mayusculas para evitar errores
+sexo = input("Elija el sexo (H/M): ")
 
 if sexo == "m" or sexo == "M":
     configJuego["personaje"] = "mujer"

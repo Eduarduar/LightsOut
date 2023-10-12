@@ -78,10 +78,17 @@ def imgs_lvl1(idioma):
     sombra4 = pygame.image.load("assets/img/lvl1/sombra4.png")
     sombra5 = pygame.image.load("assets/img/lvl1/sombra5.png")
     oscuro = pygame.image.load("assets/img/oscuro.png")
+    w1 = pygame.image.load("assets/img/botones/W1.png")
+    w2 = pygame.image.load("assets/img/botones/W2.png")
+    
 
     if idioma == "es":
+        espacio1 = pygame.image.load("assets/img/botones/Espacio1.png")
+        espacio2 = pygame.image.load("assets/img/botones/Espacio2.png")
         controles = pygame.image.load("assets/img/controlesEs.png")
     else:
+        espacio1 = pygame.image.load("assets/img/botones/Space1.png")
+        espacio2 = pygame.image.load("assets/img/botones/Space2.png")
         controles = pygame.image.load("assets/img/controlesEn.png")
 
     sombras = {
@@ -103,11 +110,15 @@ def imgs_lvl1(idioma):
         "sombras": sombras,
         "oscuro": oscuro,
         "controles": controles,
+        "abierta": abierta,
+        "w1": w1,
+        "w2": w2,
+        "espacio1": espacio1,
+        "espacio2": espacio2,
         "powerUps": {
             "velocidad": rayo,
             "reducirConsumo": reloj
-        },
-        "abierta": abierta
+        }
     }
 
     return imgs
