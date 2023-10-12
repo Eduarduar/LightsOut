@@ -18,7 +18,7 @@ tiempoPasado = 0
 def obtenerPausas(maximo):
     pausas = []
     for i in range(0, 3):
-        # sacamos un numero aleatorio entre 0 y 100
+        # sacamos un numero aleatorio entre 0 y 1000
         num = (random.randint(0, maximo))
         # redondemao el numero a la decena mas cercana
         num = round(num, -1)
@@ -47,7 +47,7 @@ def pintarPersonaje(SCREEN, porcentaje, accion):
         cuentaPasos += 1
 
 # Función que pinta las palabras en la pantalla
-def frases(configJuego):
+def frases():
     # obtenemos un unmero para la elejir la frase aleatoria del 1 al 6
     num = random.randint(1, 6)
     return num
@@ -67,14 +67,14 @@ def pantalla_de_carga(SCREEN, configJuego):
     detener = True
     segundoAnterior = 0
     i = 1
-    num = frases(configJuego)
+    num = frases()
     
     # generamos los texto a usar
     Text_text = get_font(20).render(idioma[configJuego["Idioma"]]["Juego"]["Preciona"], True, "#ffffff")
     Text_rect = Text_text.get_rect(center=(640, 700))
 
     while detener:
-        reloj.tick(60)
+        reloj.tick(60) # limitamos los fps a 60
         segundero = time.localtime().tm_sec # sacamos los segundos del reloj 
 
         if segundero != segundoAnterior:
@@ -82,7 +82,7 @@ def pantalla_de_carga(SCREEN, configJuego):
             tiempoPasado += 1
             pausa = False
             if i == 4:
-                i = 1
+                i = 0
             i += 1
 
         SCREEN.blit(imgs["fondo"], (0, 0)) # pintamos el fondo
@@ -92,7 +92,7 @@ def pantalla_de_carga(SCREEN, configJuego):
         pygame.draw.rect(SCREEN, "GREEN", (100, 100, 0 + porcentaje, 50))
 
         if ultimaFrase + 7 <= tiempoPasado: # si han pasado 5 segundos desde la ultima frase, pintamos una nueva
-            num = frases(configJuego)
+            num = frases()
             ultimaFrase = tiempoPasado
 
         # generamos el texto a usar

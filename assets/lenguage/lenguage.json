@@ -73,7 +73,7 @@
         "Idioma": "English",
         "Carga": { "Carga1": "Loading", "Carga2": "Loading.", "Carga3": "Loading..", "Carga4": "Loading..." },
         "MenuInicial": { "Titulo": "Lights Out", "Opcion1": "Start", "Opcion2": "Options", "Opcion3": "Exit" },
-        "Opciones": { "Titulo": "Options", "Opcion1": "Language", "Opcion2": "Volume" },
+        "Opciones": { "Titulo": "Options", "Opcion1": "Languaje", "Opcion2": "Volume" },
         "Niveles": {
             "Titulo": "Lights Out - Levels",
             "Opcion1": "Level 1",
