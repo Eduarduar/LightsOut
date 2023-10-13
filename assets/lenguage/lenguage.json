@@ -3,8 +3,13 @@
         "Titulo": "Luces Fuera",
         "Idioma": "Español",
         "Carga": { "Carga1": "Cargando", "Carga2": "Cargando.", "Carga3": "Cargando..", "Carga4": "Cargando..." },
-        "MenuInicial": { "Titulo": "Luces Fuera", "Opcion1": "Empezar", "Opcion2": "Opciones", "Opcion3": "Salir" },
+        "MenuInicial": { "Titulo": "Luces Fuera", "Opcion1": "Empezar", "Opcion2": "Opciones", "Opcion3": "Salir", "Opcion4": "Personaje"},
         "Opciones": { "Titulo": "Opciones", "Opcion1": "Idioma", "Opcion2": "Volumen" },
+        "CambiarAvatar": {
+            "Titulo": "Personajes",
+            "Hombre": "Hombre",
+            "Mujer": "Mujer"
+        },
         "Niveles": {
             "Titulo": "Luces Fuera - Niveles",
             "Opcion1": "Nivel 1",
@@ -72,8 +77,13 @@
         "Titulo": "Lights Out",
         "Idioma": "English",
         "Carga": { "Carga1": "Loading", "Carga2": "Loading.", "Carga3": "Loading..", "Carga4": "Loading..." },
-        "MenuInicial": { "Titulo": "Lights Out", "Opcion1": "Start", "Opcion2": "Options", "Opcion3": "Exit" },
+        "MenuInicial": { "Titulo": "Lights Out", "Opcion1": "Start", "Opcion2": "Options", "Opcion3": "Exit", "Opcion4": "Character"},
         "Opciones": { "Titulo": "Options", "Opcion1": "Languaje", "Opcion2": "Volume" },
+        "CambiarAvatar": {
+            "Titulo": "Characters",
+            "Hombre": "Man",
+            "Mujer": "Woman"
+        },
         "Niveles": {
             "Titulo": "Lights Out - Levels",
             "Opcion1": "Level 1",

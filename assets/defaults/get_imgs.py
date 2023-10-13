@@ -72,6 +72,7 @@ def imgs_lvl1(idioma):
     bombilla3 = pygame.image.load("assets/img/sprites/items/bombillas/Bombilla3.png")
     sombra_lvl1 = pygame.image.load("assets/img/lvl1/sombra_lvl1.png")
     fondo = pygame.image.load("assets/img/lvl1/fondo_lvl1.png")
+    powerUpsInfo = pygame.image.load("assets/img/powerUps.png")
     sombra1 = pygame.image.load("assets/img/lvl1/sombra1.png")
     sombra2 = pygame.image.load("assets/img/lvl1/sombra2.png")
     sombra3 = pygame.image.load("assets/img/lvl1/sombra3.png")
@@ -83,10 +84,14 @@ def imgs_lvl1(idioma):
     
 
     if idioma == "es":
+        faces = pygame.image.load("assets/img/etapasEs.png")
+        interface = pygame.image.load("assets/img/interfaceEs.png")
         espacio1 = pygame.image.load("assets/img/botones/Espacio1.png")
         espacio2 = pygame.image.load("assets/img/botones/Espacio2.png")
         controles = pygame.image.load("assets/img/controlesEs.png")
     else:
+        faces = pygame.image.load("assets/img/etapasEn.png")
+        interface = pygame.image.load("assets/img/interfaceEn.png")
         espacio1 = pygame.image.load("assets/img/botones/Space1.png")
         espacio2 = pygame.image.load("assets/img/botones/Space2.png")
         controles = pygame.image.load("assets/img/controlesEn.png")
@@ -116,9 +121,12 @@ def imgs_lvl1(idioma):
         "espacio1": espacio1,
         "espacio2": espacio2,
         "powerUps": {
+            "info": powerUpsInfo,
             "velocidad": rayo,
             "reducirConsumo": reloj
-        }
+        },
+        "faces": faces,
+        "interface": interface
     }
 
     return imgs
@@ -248,3 +256,24 @@ def imgs_historia(personaje):
     }
 
     return imgs
+
+
+def imgs_cambiarAvatar():
+    fondo = pygame.image.load("assets/img/cambiarAvatar/fondo.png")
+    moldes = pygame.image.load("assets/img/cambiarAvatar/moldes.png")
+    luzHombre = pygame.image.load("assets/img/cambiarAvatar/luzHombre.png")
+    luzMujer = pygame.image.load("assets/img/cambiarAvatar/luzMujer.png")
+    hombre = pygame.image.load("assets/img/cambiarAvatar/hombre.png")
+    mujer = pygame.image.load("assets/img/cambiarAvatar/mujer.png")
+
+    imgs = {
+        "fondo": fondo,
+        "moldes": moldes,
+        "luzHombre": luzHombre,
+        "luzMujer": luzMujer,
+        "hombre": hombre,
+        "mujer": mujer
+    }
+
+    return imgs
+

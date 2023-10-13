@@ -122,7 +122,7 @@ def pantalla_de_carga(SCREEN, configJuego):
 
         # Eventos
         for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN:
+            if event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONDOWN:
                 if porcentaje >= maximo:
                     detener = False
             if event.type == pygame.QUIT:
