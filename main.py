@@ -9,16 +9,9 @@ configJuego = {
     "Volumen": 0.50,
     "indiceMusic": 0,
     "historia": True,
-    "personaje": "mujer"
+    "personaje": "hombre",
+    "ropa": 1
 }
-
-# convertimos el input a mayusculas para evitar errores
-sexo = input("Elija el sexo (H/M): ")
-
-if sexo == "m" or sexo == "M":
-    configJuego["personaje"] = "mujer"
-else:
-    configJuego["personaje"] = "hombre"
 
 elementosFondo = {
     "luna": {
