@@ -290,9 +290,9 @@ def pintarPersonaje(SCREEN, accion = "caminar"):
         global infoPersonaje
         global fps
         if powerUps["estados"]["Velocidad"]["activo"] == True: # verificamos si el powerUp de velocidad esta activo
-            fps = 20 # aumentamos los fps
+            infoPersonaje["velocidad"] = 15 # aumentamos la velocidad
         else:
-            fps = 10 # reiniciamos los fps
+            infoPersonaje["velocidad"] = 10 # volvemos a la velocidad normal
         reloj.tick(fps) # fps
 
         if accion == "caminar":
@@ -431,10 +431,6 @@ def pintarFocos(SCREEN, segundero):
             for foco in focos["focosEstado"].items(): # recorremos los focos
                 if foco[1]["estado"] == 1 or foco[1]["estado"] == 2 or foco[1]["estado"] == 3: # verificamos si el foco esta encendido
                     foco[1]["tiempoEncendido"] += 1 # si el foco esta encendido sumamos un segundo 
-                    if (consumoTotal > 120): # color amarillo
-                        color = (255, 255, 0)
-                    elif (consumoTotal > 240): # color rojo
-                        color = (255, 0, 0)
 
                     if foco[1]["tiempoEncendido"] >= 50: # verificamos si el foco esta encendido por mas de 70 segundos
                         foco[1]["estado"] = 4
@@ -653,11 +649,17 @@ def pantalla_lvl1(SCREEN , configJuego, LvlsInfo, elementosFondo):
         btnOpciones.changeColor(posicionMause) # verificamos si el mause esta en el boton de opciones
         btnOpciones.update(SCREEN) #colocamos el boton de pausa
 
-        pygame.draw.rect(SCREEN, color, (1147, (509 - consumoTotal), 40, consumoTotal)) # dibujamos la barra de consumo
 
         pintarPowerUps(SCREEN, segundero) # actualizamos los estados de los powerUps
 
         pintarFocos(SCREEN, segundero) # actualizamos los estados de los focos
+        
+        if (consumoTotal > 120): # color amarillo
+            color = (255, 255, 0)
+        elif (consumoTotal > 240): # color rojo
+            color = (255, 0, 0)
+            
+        pygame.draw.rect(SCREEN, color, (1147, (509 - consumoTotal), 40, consumoTotal)) # dibujamos la barra de consumo
 
         pintarPuerta(SCREEN) # pintamos las puertas
 
@@ -676,6 +678,9 @@ def pantalla_lvl1(SCREEN , configJuego, LvlsInfo, elementosFondo):
         SCREEN.blit(fundidosText, fundidosRect)
 
         SCREEN.blit(imgs["sombra_lvl1"], (0,0)) # colocamos la sombra de los pasillos
+        
+
+        pygame.display.flip() # actualizamos la pantalla
 
         if consumoTotal >= LimiteConsumo or(relojF > 0 and focos["focosFundidos"] == 5): # verificamos si el jugador perdio
             SCREEN , configJuego, LvlsInfo, elementosFondo = perder(SCREEN, configJuego, LvlsInfo, elementosFondo)
@@ -685,4 +690,3 @@ def pantalla_lvl1(SCREEN , configJuego, LvlsInfo, elementosFondo):
             SCREEN , configJuego, LvlsInfo, elementosFondo = ganar(SCREEN, configJuego, LvlsInfo, elementosFondo)
             return SCREEN , configJuego, LvlsInfo, elementosFondo
 
-        pygame.display.flip() # actualizamos la pantalla
