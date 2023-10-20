@@ -131,27 +131,68 @@ def imgs_lvl1(idioma):
 
     return imgs
 
-def imgs_lvl2():
+def imgs_lvl2(idioma):
+    reloj = pygame.transform.scale(pygame.image.load("assets/img/sprites/items/powerUps/reloj.png"), (30,40))
+    rayo = pygame.transform.scale(pygame.image.load("assets/img/sprites/items/powerUps/rayo.png"), (30,40))
+    abierta = pygame.image.load("assets/img/lvl2/puertaon.png")
     Caja = pygame.transform.scale(pygame.image.load("assets/img/rect.png"), (550, 100))
-    fondo = pygame.image.load("assets/img/lvl1/fondo_lvl1.png")
-    sombra_lvl1 = pygame.image.load("assets/img/lvl1/sombra_lvl1.png")
     bombilla0 = pygame.image.load("assets/img/sprites/items/bombillas/Bombilla0.png")
     bombilla1 = pygame.image.load("assets/img/sprites/items/bombillas/Bombilla1.png")
     bombilla2 = pygame.image.load("assets/img/sprites/items/bombillas/Bombilla2.png")
     bombilla3 = pygame.image.load("assets/img/sprites/items/bombillas/Bombilla3.png")
+    sombra_lvl2 = pygame.image.load("assets/img/lvl2/sombra_lvl2.png")
+    fondo = pygame.image.load("assets/img/lvl2/fondo_lvl2.png")
+    powerUpsInfo = pygame.image.load("assets/img/powerUps.png")
+    sombra1 = pygame.image.load("assets/img/lvl2/sombra1.png")
+    sombra2 = pygame.image.load("assets/img/lvl2/sombra2.png")
+    sombra3 = pygame.image.load("assets/img/lvl2/sombra3.png")
+    sombra4 = pygame.image.load("assets/img/lvl2/sombra4.png")
+    sombra5 = pygame.image.load("assets/img/lvl2/sombra5.png")
+    oscuro = pygame.image.load("assets/img/oscuro.png")
+    w1 = pygame.image.load("assets/img/botones/W1.png")
+    w2 = pygame.image.load("assets/img/botones/W2.png")
+    instrucciones = pygame.image.load("assets/img/lvl2/instrucciones.png")
+    
+
+    if idioma == "es":
+        interface = pygame.image.load("assets/img/lvl2/Interface2Es.png")
+        espacio1 = pygame.image.load("assets/img/botones/Espacio1.png")
+        espacio2 = pygame.image.load("assets/img/botones/Espacio2.png")
+    else:
+        interface = pygame.image.load("assets/img/lvl2/Interface2En.png")
+        espacio1 = pygame.image.load("assets/img/botones/Space1.png")
+        espacio2 = pygame.image.load("assets/img/botones/Space2.png")
 
     sombras = {
-
+        "sombra1": sombra1,
+        "sombra2": sombra2,
+        "sombra3": sombra3,
+        "sombra4": sombra4,
+        "sombra5": sombra5
     }
 
     imgs = {
         "caja": Caja,
         "fondo": fondo,
-        "sombra_lvl1": sombra_lvl1,
+        "sombra_lvl1": sombra_lvl2,
         "bombilla0": bombilla0,
         "bombilla1": bombilla1,
         "bombilla2": bombilla2,
-        "bombilla3": bombilla3
+        "bombilla3": bombilla3,
+        "sombras": sombras,
+        "oscuro": oscuro,
+        "instrucciones": instrucciones,
+        "abierta": abierta,
+        "w1": w1,
+        "w2": w2,
+        "espacio1": espacio1,
+        "espacio2": espacio2,
+        "powerUps": {
+            "info": powerUpsInfo,
+            "velocidad": rayo,
+            "reducirConsumo": reloj
+        },
+        "interface": interface
     }
 
     return imgs
