@@ -298,7 +298,6 @@ def imgs_historia(personaje):
 
     return imgs
 
-
 def imgs_cambiarAvatar():
     fondo = pygame.image.load("assets/img/cambiarAvatar/fondo.png")
     moldes = pygame.image.load("assets/img/cambiarAvatar/moldes.png")
