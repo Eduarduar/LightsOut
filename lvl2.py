@@ -227,6 +227,46 @@ def pausaInicio(SCREEN, configJuego):
         pygame.display.flip()
         reloj.tick(10)
 
+def moverPersonaje(SCREEN):
+    global infoPersonaje
+    global segundoAccion
+    global tiempoPasado
+    global focos
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_a] and infoPersonaje["PX"] > infoPersonaje["velocidad"] and infoPersonaje["PX"] - infoPersonaje["velocidad"] > 100:
+        infoPersonaje["PX"] - infoPersonaje["velocidad"] 
+        infoPersonaje["direccion"] = "izquierda"
+        pintarPersonaje(SCREEN, accion = "caminar")
+    elif keys[pygame.K_d] and infoPersonaje["PX"] < 1000:
+        infoPersonaje["PX"] = infoPersonaje["velocidad"] 
+        infoPersonaje["direccion"] = "derecha"
+        #pintarPersonaje(SCREEN, accion = "caminar")
+    elif keys[pygame.K_w] and ((infoPersonaje["PX"] >= 205 and infoPersonaje["PX"] <= 252) or (infoPersonaje["ancho"] + infoPersonaje["PX"] >= 205 and infoPersonaje["PX"] + infoPersonaje["ancho"] <= 252)):
+        if infoPersonaje["piso"] == 1 and segundoAccion != tiempoPasado:
+            infoPersonaje["piso"] = 2
+            infoPersonaje["PY"] -= 180
+        elif segundoAccion != tiempoPasado:
+            infoPersonaje["piso"] = 1
+            infoPersonaje["PY"] += 180
+        segundoAccion = tiempoPasado
+        #pintarPersonaje(SCREEN)
+    elif keys[pygame.K_SPACE]:
+        for foco in foco["focosEstado"].items():
+            if foco[1]["estado"] != 0 and foco[1]["estado"] != 4 and infoPersonaje["piso"] == foco[1]["piso"]:
+                if infoPersonaje["PX"] >= foco[1]["apagadorX1"] - infoPersonaje["ancho"] and infoPersonaje["PX"] <= foco[1]["apagadorX2"] + infoPersonaje["ancho"]:
+                    foco[1]["anteriorEstado"] = foco[1]["estado"]
+                    foco[1]["estado"] = 0
+                    focos["focosEncendidos"] -= 1
+                    focos["focosApagados"] += 1
+                    break 
+        #pintarPersonaje(SCREEN, accion = "apagar")
+    else: 
+        infoPersonaje["cuentaPasos"] = 1
+        infoPersonaje["quieto"] = True
+        #pintarPersonaje(SCREEN, accion = "quieto")
+
+
+
 def pantalla_lvl2(SCREEN , configJuego, LvlsInfo, elementosFondo):
     if configJuego["indiceMusic"] != 2:
         configJuego["indiceMusic"] = 2
