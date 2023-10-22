@@ -227,20 +227,68 @@ def pausaInicio(SCREEN, configJuego):
         pygame.display.flip()
         reloj.tick(10)
 
+# funcion para pintar al personaje
+def pintarPersonaje(SCREEN, accion = "caminar"):
+        global infoPersonaje
+        global fps
+        if powerUps["estados"]["Velocidad"]["activo"] == True: # verificamos si el powerUp de velocidad esta activo
+            infoPersonaje["velocidad"] = 15 # aumentamos la velocidad
+        else:
+            infoPersonaje["velocidad"] = 10 # volvemos a la velocidad normal
+        reloj.tick(fps) # fps
+
+        if accion == "caminar":
+
+            # colocamos el personaje segun su estado
+            if (infoPersonaje["cuentaPasos"] + 1) >= 3:
+                infoPersonaje["cuentaPasos"] = 0
+
+            if infoPersonaje["direccion"] == "derecha" and infoPersonaje["quieto"] != True:
+                SCREEN.blit(derecha[infoPersonaje["cuentaPasos"] // 1], (int(infoPersonaje["PX"]), int(infoPersonaje["PY"])))
+                infoPersonaje["cuentaPasos"] += 1
+            
+            elif infoPersonaje["direccion"] == "izquierda" and infoPersonaje["quieto"] != True:
+                SCREEN.blit(izquierda[infoPersonaje["cuentaPasos"] // 1], (int(infoPersonaje["PX"]), int(infoPersonaje["PY"])))
+                infoPersonaje["cuentaPasos"] += 1
+
+            elif infoPersonaje["direccion"] == "derecha" and infoPersonaje["quieto"] == True:
+                SCREEN.blit(quietoD, (int(infoPersonaje["PX"]), int(infoPersonaje["PY"])))
+
+            elif infoPersonaje["direccion"] == "izquierda" and infoPersonaje["quieto"] == True:
+                SCREEN.blit(quietoI, (int(infoPersonaje["PX"]), int(infoPersonaje["PY"])))
+
+            #reiniciamos el estado del personaje
+            infoPersonaje["quieto"] = False
+        else:
+            if infoPersonaje["direccion"] == "derecha":
+                SCREEN.blit(quietoD, (int(infoPersonaje["PX"]), int(infoPersonaje["PY"])))
+            elif infoPersonaje["direccion"] == "izquierda":
+                SCREEN.blit(quietoI, (int(infoPersonaje["PX"]), int(infoPersonaje["PY"])))
+
+# funcion para mover el personaje
 def moverPersonaje(SCREEN):
+    # variables globales
     global infoPersonaje
     global segundoAccion
     global tiempoPasado
     global focos
+
+    # obtenemos la tecla presionada
     keys = pygame.key.get_pressed()
+    
+    # tecla A
     if keys[pygame.K_a] and infoPersonaje["PX"] > infoPersonaje["velocidad"] and infoPersonaje["PX"] - infoPersonaje["velocidad"] > 100:
         infoPersonaje["PX"] - infoPersonaje["velocidad"] 
         infoPersonaje["direccion"] = "izquierda"
         pintarPersonaje(SCREEN, accion = "caminar")
+    
+    # tecla D
     elif keys[pygame.K_d] and infoPersonaje["PX"] < 1000:
         infoPersonaje["PX"] = infoPersonaje["velocidad"] 
         infoPersonaje["direccion"] = "derecha"
-        #pintarPersonaje(SCREEN, accion = "caminar")
+        pintarPersonaje(SCREEN, accion = "caminar")
+
+    # tecla W
     elif keys[pygame.K_w] and ((infoPersonaje["PX"] >= 205 and infoPersonaje["PX"] <= 252) or (infoPersonaje["ancho"] + infoPersonaje["PX"] >= 205 and infoPersonaje["PX"] + infoPersonaje["ancho"] <= 252)):
         if infoPersonaje["piso"] == 1 and segundoAccion != tiempoPasado:
             infoPersonaje["piso"] = 2
@@ -249,7 +297,9 @@ def moverPersonaje(SCREEN):
             infoPersonaje["piso"] = 1
             infoPersonaje["PY"] += 180
         segundoAccion = tiempoPasado
-        #pintarPersonaje(SCREEN)
+        pintarPersonaje(SCREEN)
+
+    # tecla ESPACIO
     elif keys[pygame.K_SPACE]:
         for foco in foco["focosEstado"].items():
             if foco[1]["estado"] != 0 and foco[1]["estado"] != 4 and infoPersonaje["piso"] == foco[1]["piso"]:
@@ -259,13 +309,13 @@ def moverPersonaje(SCREEN):
                     focos["focosEncendidos"] -= 1
                     focos["focosApagados"] += 1
                     break 
-        #pintarPersonaje(SCREEN, accion = "apagar")
+        pintarPersonaje(SCREEN, accion = "apagar")
+
+    # ninguna tecla
     else: 
         infoPersonaje["cuentaPasos"] = 1
         infoPersonaje["quieto"] = True
-        #pintarPersonaje(SCREEN, accion = "quieto")
-
-
+        pintarPersonaje(SCREEN, accion = "quieto")
 
 def pantalla_lvl2(SCREEN , configJuego, LvlsInfo, elementosFondo):
     if configJuego["indiceMusic"] != 2:
@@ -278,5 +328,5 @@ def pantalla_lvl2(SCREEN , configJuego, LvlsInfo, elementosFondo):
     imgs = imgs_lvl2(configJuego["Idioma"])
 
     while True:
-        # Tu código de la pantalla del nivel 1 aquí
-        print("Pantalla del nivel 1")
+        
+        moverPersonaje(SCREEN) # movemos y pintamos el personaje
