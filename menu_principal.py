@@ -8,6 +8,7 @@ from assets.defaults.get_imgs import imgs_menu_principal
 from cambiarAvatar import pantallaCambiarAvatar
 from carga import pantalla_de_carga
 from historia import historia
+from intro import intro
 
 imgs = imgs_menu_principal()
 reloj = pygame.time.Clock()
@@ -53,7 +54,8 @@ def menu_principal(SCREEN , configJuego, LvlsInfo, elementosFondo):
             button.update(SCREEN) # actualizamos los botones
         
         for event in pygame.event.get(): # detectamos los eventos
-            if event.type == pygame.QUIT: # si el evento es salir, salimos del juego
+            if event.type == pygame.QUIT:
+                intro(SCREEN, accion = "cerrar")
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN: # si el evento es un click del mouse

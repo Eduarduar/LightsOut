@@ -7,6 +7,7 @@ from carga import pantalla_de_carga
 from lvl1 import pantalla_lvl1
 from lvl2 import pantalla_lvl2
 from lvl3 import pantalla_lvl3
+from intro import intro
 
 idioma = cargar_idioma()
 imgs = imgs_niveles()
@@ -103,6 +104,7 @@ def niveles(SCREEN, configJuego, LvlsInfo, elementosFondo):
             btnBack.changeColor(PLAY_MOUSE_POS)
 
             if event.type == pygame.QUIT:
+                intro(SCREEN, accion = "cerrar")
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:

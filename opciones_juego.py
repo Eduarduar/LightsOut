@@ -3,6 +3,7 @@ from assets.defaults.button import Button
 from assets.defaults.get_fonts import get_font
 from assets.defaults.idioma import cargar_idioma
 from assets.defaults.get_imgs import imgs_optionsLvls
+from intro import intro
 
 idioma = cargar_idioma()
 imgs = imgs_optionsLvls()
@@ -25,6 +26,7 @@ def opciones_juego(SCREEN , configJuego, LvlsInfo, elementosFondo):
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                intro(SCREEN, accion = "cerrar")
                 pygame.quit()
                 sys.exit()
 

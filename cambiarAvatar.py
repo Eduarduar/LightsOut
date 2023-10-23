@@ -2,6 +2,7 @@ import pygame, sys
 from assets.defaults.get_fonts import get_font
 from assets.defaults.get_imgs import imgs_cambiarAvatar
 from assets.defaults.idioma import cargar_idioma
+from intro import intro
 
 imgs = imgs_cambiarAvatar()
 idioma = cargar_idioma()
@@ -23,6 +24,7 @@ def pantallaCambiarAvatar(SCREEN, configJuego):
         posY = mousePos[1]
         for event in pygame.event.get(): # Recorremos los eventos
             if event.type == pygame.QUIT:
+                intro(SCREEN, accion = "cerrar")
                 pygame.quit()
                 sys.exit()
 

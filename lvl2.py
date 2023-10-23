@@ -3,6 +3,7 @@ from assets.defaults.button import Button
 from assets.defaults.get_fonts import get_font
 from assets.defaults.idioma import cargar_idioma
 from assets.defaults.get_imgs import imgs_lvl2
+from intro import intro
 
 idioma = cargar_idioma()
 reloj = pygame.time.Clock()
@@ -198,6 +199,7 @@ def pausaInicio(SCREEN, configJuego):
                 parte += 1            
                 
             if event.type == pygame.QUIT:
+                intro(SCREEN, accion = "cerrar")
                 pygame.quit()
                 sys.exit()
         SCREEN.blit(imgs["fondo"], (0,0))

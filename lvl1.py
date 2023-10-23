@@ -5,6 +5,7 @@ from assets.defaults.idioma import cargar_idioma
 from assets.defaults.get_imgs import imgs_lvl1
 from opciones_juego import opciones_juego
 from carga import pantalla_de_carga
+from intro import intro
 
 idioma = cargar_idioma()
 reloj = pygame.time.Clock()
@@ -18,7 +19,7 @@ segundoAccion = 0
 consumoPorSeg = 0
 consumoTotal = 0
 tiempoPasado = 0
-focoPorSeg = 5
+focoPorSeg = 0
 barraMax = 0
 focos = {}
 color = ()
@@ -43,6 +44,7 @@ def reiniciar(personaje):
     global infoPersonaje
     global segundoAccion
     global tiempoPasado
+    global focoPorSeg
     global izquierda
     global powerUps
     global barraMax
@@ -76,6 +78,7 @@ def reiniciar(personaje):
     consumoPorSeg = 2 # 2 watt por segundo
     consumoTotal = 0 # el consumo total de los focos
     tiempoPasado = 0
+    focoPorSeg = 4
     barraMax = 275
     fps = 10
     subida = 1
@@ -253,6 +256,7 @@ def pausaInicio(SCREEN, configJuego):
                 parte += 1            
                 
             if event.type == pygame.QUIT:
+                intro(SCREEN, accion = "cerrar")
                 pygame.quit()
                 sys.exit()
         SCREEN.blit(imgs["fondo"], (0,0))
@@ -516,6 +520,7 @@ def perder(SCREEN, configJuego, LvlsInfo, elementosFondo):
                 pygame.mixer.Sound("assets/sounds/viento.wav").stop()
                 return SCREEN , configJuego, LvlsInfo, elementosFondo
             if event.type == pygame.QUIT:
+                intro(SCREEN, accion = "cerrar")
                 pygame.quit()
                 sys.exit()
                     
@@ -558,6 +563,7 @@ def ganar(SCREEN, configJuego, LvlsInfo, elementosFondo):
                 pygame.mixer.music.set_volume(configJuego["Volumen"])
                 return SCREEN , configJuego, LvlsInfo, elementosFondo
             if event.type == pygame.QUIT:
+                intro(SCREEN, accion = "cerrar")
                 pygame.quit()
                 sys.exit()
 
@@ -612,6 +618,7 @@ def pantalla_lvl1(SCREEN , configJuego, LvlsInfo, elementosFondo):
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                intro(SCREEN, accion = "cerrar")
                 pygame.quit()
                 sys.exit()
 
