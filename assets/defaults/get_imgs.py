@@ -174,7 +174,7 @@ def imgs_lvl2(idioma):
     imgs = {
         "caja": Caja,
         "fondo": fondo,
-        "sombra_lvl1": sombra_lvl2,
+        "sombra_lvl2": sombra_lvl2,
         "bombilla0": bombilla0,
         "bombilla1": bombilla1,
         "bombilla2": bombilla2,
