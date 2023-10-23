@@ -2,6 +2,7 @@ import sys, pygame, random, time
 from assets.defaults.idioma import cargar_idioma
 from assets.defaults.get_fonts import get_font
 from assets.defaults.get_imgs import imgs_carga
+from intro import intro
 
 idioma = cargar_idioma()
 imgs = []
@@ -126,6 +127,7 @@ def pantalla_de_carga(SCREEN, configJuego):
                 if porcentaje >= maximo:
                     detener = False
             if event.type == pygame.QUIT:
+                intro(SCREEN, accion = "cerrar")
                 pygame.quit()
                 sys.exit()
 

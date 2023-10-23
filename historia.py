@@ -1,5 +1,6 @@
 import pygame, sys, time
 from assets.defaults.get_imgs import imgs_historia
+from intro import intro
 
 reloj = pygame.time.Clock()
 imgs = []
@@ -94,5 +95,6 @@ def historia(SCREEN, personaje):
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                intro(SCREEN, accion = "cerrar")
                 pygame.quit()
                 sys.exit()
