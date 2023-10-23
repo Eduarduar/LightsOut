@@ -1,4 +1,4 @@
-import sys, pygame
+import sys, pygame, random, time
 from assets.defaults.button import Button
 from assets.defaults.get_fonts import get_font
 from assets.defaults.idioma import cargar_idioma
@@ -15,7 +15,7 @@ infoPersonaje = 0
 LimiteConsumo = 0
 segundoAccion = 0
 consumoPorSeg = 0
-consumoPorTotal = 0
+consumoTotal = 0
 tiempoPasado = 0
 focoPorSeg = 5
 barraMax = 0
@@ -30,7 +30,7 @@ subida = 0
 quietoD = ""
 quietoI = ""
 derecha = []
-izquierda = []
+izquierda = [] 
 
 #funcion para reiniciar las variables
 def reiniciar (personaje):
@@ -40,7 +40,7 @@ def reiniciar (personaje):
     global LimiteConsumo  
     global segundoAccion 
     global consumoPorSeg  
-    global consumoPorTotal 
+    global consumoTotal 
     global tiempoPasado 
     global focoPorSeg 
     global barraMax 
@@ -108,10 +108,10 @@ def reiniciar (personaje):
         "focosFundidos": 0,
         "focosTotales": 5,
         "focosApagados": 0,
-        "focosEstado": { # 0 = apagado, 1 = encendido, 2 = emepezando a calentarce, 3 = a punto de fundirse, 4 = fundido
+        "focosEstado": { 
             "foco1": {
                 "numero": 1,
-                "estado": 0,
+                "estado": 0, # 0 = apagado, 1 = encendido, 2 = emepezando a calentarce, 3 = a punto de fundirse, 4 = fundido
                 "ultimoEstado": 1,
                 "tiempoEncendido": 0,
                 "posicion": (341, 286),
@@ -184,7 +184,6 @@ def reiniciar (personaje):
         "quieto": True,
         "piso": 1
     }
-        
 
 # funcion para mostrar una pantalla de pausa antes de iniciar
 def pausaInicio(SCREEN, configJuego):
@@ -317,7 +316,79 @@ def moverPersonaje(SCREEN):
         infoPersonaje["quieto"] = True
         pintarPersonaje(SCREEN, accion = "quieto")
 
+def pintarFocos(SCREEN, segundero):
+    global segundoUltimoFoco
+    global segundoAnterior
+    global consumoTotal
+    global consumoPorSeg
+    global tiempoPasado
+    global focoPorSeg
+    global powerUps
+    global focos
+    global color
+
+    if segundero != segundoAnterior: # verificamos si el tiempo cambio 
+        if consumoPorSeg == 2: # verificamos si el consumo por segundo es 2
+            consumoPorSeg = 1
+        else:
+            consumoPorSeg = 2
+            
+        tiempoPasado += 1 # si el tiempo cambio sumamos un segundo
+        if powerUps["estados"]["reducirConsumo"]["activo"] == True:  # verificamos si el powerUp de reducir consumo esta activo
+            consumoTotal += (1/2) * focos["focosEncendidos"]  # reducimos a la mitad el consumo de los focos encendidos
+        else:
+            consumoTotal += consumoPorSeg * foco["focosEncendidos"] # sumamos el consumo de los focos encendidos
+
+        segundoAnterior = segundero # actualizamos el tiempo anterior
+        
+        for foco in focos["focosEstado"].items(): # recorremos los focos
+            if foco[1]["abierta"] == True:
+                foco[1]["abierta"] = False
+                pygame.mixer.Sound("assets/sounds/cerrarPuerta2.wav").play()
+
+            if foco[1]["estado"] == 1 or foco[1]["estado"] == 2 or foco[1]["estado"] == 3: # verificamos si el foco esta encendido
+                foco[1]["tiempoEncendido"] += 1 # si el foco esta encendido sumamos un segundo 
+
+                if foco[1]["tiempoEncendido"] >= 50: # verificamos si el foco esta encendido por mas de 70 segundos
+                    foco[1]["estado"] = 4
+                    foco[1]["ultimoEstado"] = 4
+                    focos["focosFundidos"] += 1
+                    focos["focosEncendidos"] -= 1
+                    pygame.mixer.Sound("assets/sounds/romper.wav").play() # sonido de fundir foco
+
+                elif foco[1]["tiempoEncendido"] >= 30: # verificamos si el foco esta encendido por mas de 45 segundos
+                    foco[1]["estado"] = 3
+                    foco[1]["ultimoEstado"] = 3
+
+                elif foco[1]["tiempoEncendido"] >= 20: # verificamos si el foco esta encendido por mas de 30 segundos
+                    foco[1]["estado"] = 2
+                    foco[1]["ultimoEstado"] = 2
+
+            if segundoUltimoFoco + focoPorSeg <= tiempoPasado and focos["focosEncendidos"] != 5 - focos["focosFundidos"]: # verificamos si pasaron 5 segundos desde que se fundio el ultimo foco
+                segundoUltimoFoco = tiempoPasado # actualizamos el tiempo del ultimo foco encendido
+                numFoco = 0
+                while True: # buscamos un foco apagado
+                    numFoco = random.randint(1, focos["focosTotales"]) # elegimos un foco al azar
+                    if focos["focosEstado"][f"foco{numFoco}"]["estado"] == 0: # verificamos si el foco esta apagado
+                        break
+                # abrimos la puerta
+                focos["focosEstado"][f"foco{numFoco}"]["abierta"] = True
+                pygame.mixer.Sound("assets/sounds/abrirPuerta.wav").play() # sonido de abrir puerta
+
+                # encendemos el foco
+                focos["focosEstado"][f"foco{numFoco}"]["estado"] = focos["focosEstado"][f"foco{numFoco}"]["ultimoEstado"] # encendemos el foco
+                focos["focosEncendidos"] += 1 # sumamos un foco encendido
+                pygame.mixer.Sound("assets/sounds/prenderFoco.wav").play() # sonido de encender foco
+
+                # pintamos los focos encendidos
+                for foco in focos["focosEstado"].items(): # recorremos los focos
+                    if foco[1]["estado"] != 0 and foco[1]["estado"] != 4: # verificamos si el foco esta apagado
+                        SCREEN.blit(imgs[f"bombilla{foco[1]['estado']}"], foco[1]["posicion"]) # colocamos el foco en pantalla
+                    else:
+                        SCREEN.blit(imgs[f"sombras"][f"sombra{foco[1]['numero']}"], (0, 0))
+
 def pantalla_lvl2(SCREEN , configJuego, LvlsInfo, elementosFondo):
+    global imgs
     if configJuego["indiceMusic"] != 2:
         configJuego["indiceMusic"] = 2
         pygame.mixer.music.load(f"assets/songs/musica{configJuego['indiceMusic']}.wav") #cargamos la musica
@@ -328,5 +399,13 @@ def pantalla_lvl2(SCREEN , configJuego, LvlsInfo, elementosFondo):
     imgs = imgs_lvl2(configJuego["Idioma"])
 
     while True:
+
+        segundero = time.localtime().tm_sec # obtenemos el tiempo actual
+
+        posicionMouse = pygame.mouse.get_pos() # obtenemos la posicion del mouse
+        
+        SCREEN.blit(imgs["fondo"], (0,0)) # colocamos el fondo del nivel
+
+        pintarFocos(SCREEN, segundero) # pintamos los focos
         
         moverPersonaje(SCREEN) # movemos y pintamos el personaje
