@@ -412,40 +412,39 @@ def pintarFocos(SCREEN, segundero):
     global focos
     global color
     if segundero != segundoAnterior: # verificamos si el tiempo cambio 
-            if consumoPorSeg == 2: # verificamos si el consumo por segundo es 2
-                consumoPorSegz = 1
-            else:
-                consumoPorSegz = 2
-            # desactivamos las puertas activas
-            for foco in focos["focosEstado"].items():
-                if foco[1]["abierta"] == True:
-                    foco[1]["abierta"] = False
-                    pygame.mixer.Sound("assets/sounds/cerrarPuerta2.wav").play()
-            tiempoPasado += 1 # si el tiempo cambio sumamos un segundo
-            if powerUps["estados"]["reducirConsumo"]["activo"] == True: # verificamos si el powerUp de reducir consumo esta activo
-                consumoTotal += (1 / 2) * focos["focosEncendidos"] # reducimos a la mitad el consumo de los focos encendidos
-            else:
-                consumoTotal += consumoPorSeg * focos["focosEncendidos"] # sumamos el consumo de los focos encendidos
-            segundoAnterior = segundero # actualizamos el tiempo anterior
+        if consumoPorSeg == 2: # verificamos si el consumo por segundo es 2
+            consumoPorSeg = 1
+        else:
+            consumoPorSeg = 2
+        tiempoPasado += 1 # si el tiempo cambio sumamos un segundo
+        if powerUps["estados"]["reducirConsumo"]["activo"] == True: # verificamos si el powerUp de reducir consumo esta activo
+            consumoTotal += (1 / 2) * focos["focosEncendidos"] # reducimos a la mitad el consumo de los focos encendidos
+        else:
+            consumoTotal += consumoPorSeg * focos["focosEncendidos"] # sumamos el consumo de los focos encendidos
+        segundoAnterior = segundero # actualizamos el tiempo anterior
 
-            for foco in focos["focosEstado"].items(): # recorremos los focos
-                if foco[1]["estado"] == 1 or foco[1]["estado"] == 2 or foco[1]["estado"] == 3: # verificamos si el foco esta encendido
-                    foco[1]["tiempoEncendido"] += 1 # si el foco esta encendido sumamos un segundo 
+        for foco in focos["focosEstado"].items(): # recorremos los focos
+            if foco[1]["abierta"] == True:
+                foco[1]["abierta"] = False
+                pygame.mixer.Sound("assets/sounds/cerrarPuerta2.wav").play()
+            if foco[1]["estado"] == 1 or foco[1]["estado"] == 2 or foco[1]["estado"] == 3: # verificamos si el foco esta encendido
+                foco[1]["tiempoEncendido"] += 1 # si el foco esta encendido sumamos un segundo 
 
-                    if foco[1]["tiempoEncendido"] >= 50: # verificamos si el foco esta encendido por mas de 70 segundos
-                        foco[1]["estado"] = 4
-                        foco[1]["ultimoEstado"] = 4
-                        focos["focosFundidos"] += 1
-                        focos["focosEncendidos"] -= 1
-                        pygame.mixer.Sound("assets/sounds/romper.wav").play() # sonido de fundir foco
+                if foco[1]["tiempoEncendido"] >= 50: # verificamos si el foco esta encendido por mas de 70 segundos
+                    foco[1]["estado"] = 4
+                    foco[1]["ultimoEstado"] = 4
+                    focos["focosFundidos"] += 1
+                    focos["focosEncendidos"] -= 1
+                    pygame.mixer.Sound("assets/sounds/romper.wav").play() # sonido de fundir foco
 
-                    elif foco[1]["tiempoEncendido"] >= 30: # verificamos si el foco esta encendido por mas de 45 segundos
-                        foco[1]["estado"] = 3
-                        foco[1]["ultimoEstado"] = 3
+                elif foco[1]["tiempoEncendido"] >= 30: # verificamos si el foco esta encendido por mas de 45 segundos
+                    foco[1]["estado"] = 3
+                    foco[1]["ultimoEstado"] = 3
 
-                    elif foco[1]["tiempoEncendido"] >= 20: # verificamos si el foco esta encendido por mas de 30 segundos
-                        foco[1]["estado"] = 2
-                        foco[1]["ultimoEstado"] = 2
+                elif foco[1]["tiempoEncendido"] >= 20: # verificamos si el foco esta encendido por mas de 30 segundos
+                    foco[1]["estado"] = 2
+                    foco[1]["ultimoEstado"] = 2
+                    
     # si hay 4 focos prendidos vamos a esperar 10 segundos para prender el siguiente foco
 
     if focos["focosEncendidos"] >= 4:
