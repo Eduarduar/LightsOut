@@ -329,54 +329,54 @@ def pintarPersonaje(SCREEN, accion = "caminar"):
 
 # funcion para mover al personaje
 def moverPersonaje(SCREEN):
-        global infoPersonaje
-        global segundoAccion
-        global tiempoPasado
-        global focos
+    global infoPersonaje
+    global segundoAccion
+    global tiempoPasado
+    global focos
 
-        keys = pygame.key.get_pressed() # eventos del teclado
+    keys = pygame.key.get_pressed() # eventos del teclado
 
-        # Tecla A
-        if keys[pygame.K_a] and infoPersonaje["PX"] > infoPersonaje["velocidad"] and infoPersonaje["PX"] - infoPersonaje["velocidad"] > 100:
-            infoPersonaje["PX"] -= infoPersonaje["velocidad"]
-            infoPersonaje["direccion"] = "izquierda"
-            pintarPersonaje(SCREEN, accion="caminar")
+    # Tecla A
+    if keys[pygame.K_a] and infoPersonaje["PX"] > infoPersonaje["velocidad"] and infoPersonaje["PX"] - infoPersonaje["velocidad"] > 100:
+        infoPersonaje["PX"] -= infoPersonaje["velocidad"]
+        infoPersonaje["direccion"] = "izquierda"
+        pintarPersonaje(SCREEN, accion="caminar")
 
-        # Tecla D
-        elif keys[pygame.K_d] and infoPersonaje["PX"] < 1000 :
-            infoPersonaje["PX"] += infoPersonaje["velocidad"]
-            infoPersonaje["direccion"] = "derecha"
-            pintarPersonaje(SCREEN, accion="caminar")
+    # Tecla D
+    elif keys[pygame.K_d] and infoPersonaje["PX"] < 1000 :
+        infoPersonaje["PX"] += infoPersonaje["velocidad"]
+        infoPersonaje["direccion"] = "derecha"
+        pintarPersonaje(SCREEN, accion="caminar")
 
-        # Tecla W
-        elif keys[pygame.K_w] and ((infoPersonaje["PX"] >= 205 and infoPersonaje["PX"] <= 252) or (infoPersonaje["ancho"] + infoPersonaje["PX"] >= 205 and infoPersonaje["PX"] + infoPersonaje["ancho"] <= 252)):
-            if infoPersonaje["piso"] == 1 and segundoAccion != tiempoPasado:
-                infoPersonaje["piso"] = 2
-                infoPersonaje["PY"] -= 180
-            elif segundoAccion != tiempoPasado:
-                infoPersonaje["piso"] = 1
-                infoPersonaje["PY"] += 180
-            segundoAccion = tiempoPasado
-            pintarPersonaje(SCREEN)
+    # Tecla W
+    elif keys[pygame.K_w] and ((infoPersonaje["PX"] >= 205 and infoPersonaje["PX"] <= 252) or (infoPersonaje["ancho"] + infoPersonaje["PX"] >= 205 and infoPersonaje["PX"] + infoPersonaje["ancho"] <= 252)):
+        if infoPersonaje["piso"] == 1 and segundoAccion != tiempoPasado:
+            infoPersonaje["piso"] = 2
+            infoPersonaje["PY"] -= 180
+        elif segundoAccion != tiempoPasado:
+            infoPersonaje["piso"] = 1
+            infoPersonaje["PY"] += 180
+        segundoAccion = tiempoPasado
+        pintarPersonaje(SCREEN)
 
-        # Tecla Espacio
-        elif keys[pygame.K_SPACE]:
-            for foco in focos["focosEstado"].items(): # recorremos los focos
-                if foco[1]["estado"] != 0 and foco[1]["estado"] != 4 and infoPersonaje["piso"] == foco[1]["piso"]: # verificamos si el foco esta apagado
-                    if infoPersonaje["PX"] >= foco[1]["apagadorX1"] - infoPersonaje["ancho"] and infoPersonaje["PX"] <= foco[1]["apagadorX2"] + infoPersonaje["ancho"]:
-                        foco[1]["anteriorEstado"] = foco[1]["estado"]
-                        foco[1]["estado"] = 0
-                        focos["focosEncendidos"] -= 1
-                        focos["focosApagados"] += 1
-                        soltarPowerUp()
-                        break
-            pintarPersonaje(SCREEN, accion="apagar")
+    # Tecla Espacio
+    elif keys[pygame.K_SPACE]:
+        for foco in focos["focosEstado"].items(): # recorremos los focos
+            if foco[1]["estado"] != 0 and foco[1]["estado"] != 4 and infoPersonaje["piso"] == foco[1]["piso"]: # verificamos si el foco esta apagado
+                if infoPersonaje["PX"] >= foco[1]["apagadorX1"] - infoPersonaje["ancho"] and infoPersonaje["PX"] <= foco[1]["apagadorX2"] + infoPersonaje["ancho"]:
+                    foco[1]["anteriorEstado"] = foco[1]["estado"]
+                    foco[1]["estado"] = 0
+                    focos["focosEncendidos"] -= 1
+                    focos["focosApagados"] += 1
+                    soltarPowerUp()
+                    break
+        pintarPersonaje(SCREEN, accion="apagar")
 
-        #personaje quieto
-        else:
-            infoPersonaje["cuentaPasos"] = 1
-            infoPersonaje["quieto"] = True
-            pintarPersonaje(SCREEN, accion="quieto")
+    #personaje quieto
+    else:
+        infoPersonaje["cuentaPasos"] = 1
+        infoPersonaje["quieto"] = True
+        pintarPersonaje(SCREEN, accion="quieto")
 
 # función pinta las teclas que se puede usar
 def pintarTeclas(SCREEN):
@@ -655,8 +655,9 @@ def pantalla_lvl1(SCREEN , configJuego, LvlsInfo, elementosFondo):
         btnOpciones.changeColor(posicionMause) # verificamos si el mause esta en el boton de opciones
         btnOpciones.update(SCREEN) #colocamos el boton de pausa
 
-
         pintarPowerUps(SCREEN, segundero) # actualizamos los estados de los powerUps
+        
+        moverPersonaje(SCREEN) # movemos al personaje
 
         pintarFocos(SCREEN, segundero) # actualizamos los estados de los focos
         
@@ -671,7 +672,6 @@ def pantalla_lvl1(SCREEN , configJuego, LvlsInfo, elementosFondo):
 
         pintarTeclas(SCREEN) # pintamos las teclas
 
-        moverPersonaje(SCREEN) # movemos al personaje
 
         relojF = pintarTiempo(SCREEN, tiempoPasado, configJuego) # colocamos el tiempo transcurrido y obtenemos el tiempo restante
 

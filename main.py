@@ -31,20 +31,23 @@ elementosFondo = {
 LvlsInfo = {
     "LvlDisponibles" : {
         "lvl1": True,
-        "lvl2": False,
+        "lvl2": True,
         "lvl3": False
     },
     "LvlCompletados":{
-        "lvl1": False,
+        "lvl1": True,
         "lvl2": False,
         "lvl3": False
     }
 }
 
 def main():
+    
     pygame.init()
     SCREEN = pygame.display.set_mode((1280, 720))
     pygame.display.set_caption("Lights Out")
+    icon = pygame.image.load('assets/img/icono.ico')
+    pygame.display.set_icon(icon)
 
     intro(SCREEN)
     menu_principal(SCREEN, configJuego, LvlsInfo, elementosFondo)
