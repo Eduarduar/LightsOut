@@ -62,10 +62,10 @@ def niveles(SCREEN, configJuego, LvlsInfo, elementosFondo):
 
     recargarEdificios(LvlsInfo)
         
-    btnLvl1 = Button(image=pygame.transform.scale(imgs["caja"], (270, 100)), pos=(300, 200),  text_input=idioma[configJuego["Idioma"]]["Niveles"]["Opcion1"], font=get_font(35), base_color="#d7fcd4", hovering_color="#f9c447")
-    btnLvl2 = Button(image=pygame.transform.scale(imgs["caja"], (270, 100)), pos=(660, 200), text_input=idioma[configJuego["Idioma"]]["Niveles"]["Opcion2"], font=get_font(35), base_color="#d7fcd4", hovering_color="#f9c447")
-    btnLvl3 = Button(image=pygame.transform.scale(imgs["caja"], (270, 100)), pos=(1050, 200), text_input=idioma[configJuego["Idioma"]]["Niveles"]["Opcion3"], font=get_font(35), base_color="#d7fcd4", hovering_color="#f9c447")
-    btnBack = Button(image=None, pos=(50,50), text_input="←", font=get_font(75), base_color="White", hovering_color="Red")
+    btnLvl1 = Button(image1=pygame.transform.scale(imgs["caja"], (270, 100)), pos=(300, 200),  text_input=idioma[configJuego["Idioma"]]["Niveles"]["Opcion1"], font=get_font(35), base_color="#d7fcd4", hovering_color="#f9c447")
+    btnLvl2 = Button(image1=pygame.transform.scale(imgs["caja"], (270, 100)), pos=(660, 200), text_input=idioma[configJuego["Idioma"]]["Niveles"]["Opcion2"], font=get_font(35), base_color="#d7fcd4", hovering_color="#f9c447")
+    btnLvl3 = Button(image1=pygame.transform.scale(imgs["caja"], (270, 100)), pos=(1050, 200), text_input=idioma[configJuego["Idioma"]]["Niveles"]["Opcion3"], font=get_font(35), base_color="#d7fcd4", hovering_color="#f9c447")
+    btnBack = Button(image1=None, pos=(50,50), text_input="←", font=get_font(75), base_color="White", hovering_color="Red")
 
     while True:
         PLAY_MOUSE_POS = pygame.mouse.get_pos()
