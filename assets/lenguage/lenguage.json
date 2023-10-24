@@ -23,6 +23,15 @@
             "Reiniciar": "Reiniciar",
             "Salir": "Salir"
         },
+        "perder": {
+            "t1": "No lograste reducir el consumo del edificio"
+        },
+        "ganar": {
+            "t1": "Lograste reducir el consumo del edificio",
+            "t2": "Puntaje:",
+            "t3": "Luces apagadas:",
+            "t4": "Focos fundidos:"
+        },
         "Juego": {
             "Medidor": "Medidor: ",
             "Ganaste": "Ganaste!",
@@ -96,6 +105,15 @@
             "Reanudar": "Resume",
             "Reiniciar": "Restart",
             "Salir": "Exit"
+        },
+        "perder": {
+            "t1": "You failed to reduce the building's consumption"
+        },
+        "ganar": {
+            "t1": "You managed to reduce the building's consumption",
+            "t2": "Score:",
+            "t3": "Lights off:",
+            "t4": "Blown bulbs:"
         },
         "Juego": {
             "Medidor": "Meter: ",

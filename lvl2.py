@@ -441,9 +441,8 @@ def pantalla_lvl2(SCREEN , configJuego, LvlsInfo, elementosFondo):
 
         if (consumoTotal > 120):
             color = (255,255,0)
-
         elif(consumoTotal > 240):
-            color = (255.0.0)
+            color = (255,0,0)
 
         pygame.draw.rect(SCREEN,color, (1147,(509-consumoTotal), 40, consumoTotal))
 
