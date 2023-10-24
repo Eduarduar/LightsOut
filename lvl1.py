@@ -610,7 +610,7 @@ def pantalla_lvl1(SCREEN , configJuego, LvlsInfo, elementosFondo):
         pygame.mixer.music.play(-1) #reproducimos la musica en bucle
 
     pygame.display.set_caption(idioma[configJuego["Idioma"]]["Nivel1"]["Titulo"])
-    btnOpciones = Button(image=None, pos=(1047,57), text_input="||", font=get_font(30), base_color="White", hovering_color="#555f68") # boton de pausa
+    btnOpciones = Button(image1=None, pos=(1047,57), text_input="||", font=get_font(30), base_color="White", hovering_color="#555f68") # boton de pausa
     reiniciar(configJuego["personaje"])
     pausaInicio(SCREEN, configJuego)
 

@@ -1,16 +1,70 @@
 import pygame
 
-def imgs_menu_principal():
+def imgs_menu_principal(idioma):
     Caja = pygame.transform.scale(pygame.image.load("assets/img/rect.png"), (550, 100))
     ciudad = pygame.transform.scale(pygame.image.load("assets/backgrounds/ciudad.png"), (1280, 720))
     luna = pygame.image.load("assets/backgrounds/luna.png")
     nube = pygame.image.load("assets/backgrounds/nube.png")
 
+    jugar = pygame.image.load("assets/img/botones/opciones/jugar/jugar.png")
+    jugarP = pygame.image.load("assets/img/botones/opciones/jugar/jugarP.png")
+    opciones = pygame.image.load("assets/img/botones/opciones/opciones/opciones.png")
+    opcionesP = pygame.image.load("assets/img/botones/opciones/opciones/opcionesP.png")
+    atras = pygame.image.load("assets/img/botones/opciones/atras/atras.png")
+    atrasP = pygame.image.load("assets/img/botones/opciones/atras/atrasP.png")
+    play = pygame.image.load("assets/img/botones/opciones/play/play.png")
+    playP = pygame.image.load("assets/img/botones/opciones/play/playP.png")
+    options = pygame.image.load("assets/img/botones/opciones/opcions/opcions.png")
+    optionsP = pygame.image.load("assets/img/botones/opciones/opcions/opcionsP.png")
+    back = pygame.image.load("assets/img/botones/opciones/back/back.png")
+    backP = pygame.image.load("assets/img/botones/opciones/back/backP.png")
+
+    avatar = pygame.image.load("assets/img/botones/opciones/avatar/avatar.png")
+    avatarP = pygame.image.load("assets/img/botones/opciones/avatar/avatarP.png")
+
     imgs = {
         "ciudad": ciudad,
         "luna": luna,
         "nube": nube,
-        "caja": Caja
+        "caja": Caja,
+        "botones": {
+            "es": {
+                "jugar": {
+                    "normal": jugar,
+                    "presionado": jugarP
+                },
+                "opciones": {
+                    "normal": opciones,
+                    "presionado": opcionesP
+                },
+                "atras": {
+                    "normal": atras,
+                    "presionado": atrasP
+                },
+                "avatar": {
+                    "normal": avatar,
+                    "presionado": avatarP
+                }
+            },
+            "en": {
+                "jugar": {
+                    "normal": play,
+                    "presionado": playP
+                },
+                "opciones": {
+                    "normal": options,
+                    "presionado": optionsP
+                },
+                "atras": {
+                    "normal": back,
+                    "presionado": backP
+                },
+                "avatar": {
+                    "normal": avatar,
+                    "presionado": avatarP
+                }
+            }
+        }
     }
 
     return imgs
