@@ -439,6 +439,14 @@ def pantalla_lvl2(SCREEN , configJuego, LvlsInfo, elementosFondo):
 
         pintarFocos(SCREEN, segundero) # pintamos los focos
 
+        if (consumoTotal > 120):
+            color = (255,255,0)
+
+        elif(consumoTotal > 240):
+            color = (255.0.0)
+
+        pygame.draw.rect(SCREEN,color, (1147,(509-consumoTotal), 40, consumoTotal))
+
         SCREEN.blit(imgs["sombra_lvl2"], (0,0)) # colocamos la sombra del nivel
 
         pygame.display.flip()
