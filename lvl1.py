@@ -504,6 +504,10 @@ def perder(SCREEN, configJuego, LvlsInfo, elementosFondo):
         Text_rect = Text_text.get_rect(center=(640, 500))
         SCREEN.blit(Text_text, Text_rect)
 
+        perder_text = get_font(27).render(idioma[configJuego["Idioma"]]["perder"]["t1"], True, "#FFA500")
+        perder_rect = perder_text.get_rect(center=(640, 400))
+        SCREEN.blit(perder_text, perder_rect)
+
         pygame.display.flip()
         
         if pausa == True:
@@ -526,6 +530,11 @@ def perder(SCREEN, configJuego, LvlsInfo, elementosFondo):
                     
 # funcion para mostrar una pantalla de ganaste
 def ganar(SCREEN, configJuego, LvlsInfo, elementosFondo):
+    global focos
+    # calvulamos el score
+
+    score = (focos["focosApagados"] * 50) - (focos["focosFundidos"] * 100)
+
     # mostramos una pantalla de ganaste o un mensaje de ganaste
     pygame.image.save(SCREEN, "assets/img/pantalla.png")
     ultimoFrame = pygame.image.load("assets/img/pantalla.png")
@@ -543,8 +552,24 @@ def ganar(SCREEN, configJuego, LvlsInfo, elementosFondo):
         SCREEN.blit(TITULO_TEXT, TITULO_RECT)
 
         Text_text = get_font(20).render(idioma[configJuego["Idioma"]]["Juego"]["Preciona"], True, "#ffffff")
-        Text_rect = Text_text.get_rect(center=(640, 500))
+        Text_rect = Text_text.get_rect(center=(640, 600))
         SCREEN.blit(Text_text, Text_rect)
+
+        ganar_text = get_font(27).render(idioma[configJuego["Idioma"]]["ganar"]["t1"], True, "#FFA500")
+        ganar_rect = ganar_text.get_rect(center=(640, 400))
+        SCREEN.blit(ganar_text, ganar_rect)
+
+        score_text = get_font(27).render(idioma[configJuego["Idioma"]]["ganar"]["t2"] + f" {score}", True, "#FFA500")
+        score_rect = score_text.get_rect(center=(640, 450))
+        SCREEN.blit(score_text, score_rect)
+
+        apagadas_text = get_font(27).render(idioma[configJuego["Idioma"]]["ganar"]["t3"] + f' {focos["focosApagados"]}', True, "#FFA500")
+        apagadas_rect = apagadas_text.get_rect(center=(640, 500))
+        SCREEN.blit(apagadas_text, apagadas_rect)
+
+        fundidas_text = get_font(27).render(idioma[configJuego["Idioma"]]["ganar"]["t4"] + f' {focos["focosFundidos"]}', True, "#FFA500")
+        fundidas_rect = fundidas_text.get_rect(center=(640, 550))
+        SCREEN.blit(fundidas_text, fundidas_rect)
 
         pygame.display.flip()
         
@@ -671,7 +696,6 @@ def pantalla_lvl1(SCREEN , configJuego, LvlsInfo, elementosFondo):
         pintarPuerta(SCREEN) # pintamos las puertas
 
         pintarTeclas(SCREEN) # pintamos las teclas
-
 
         relojF = pintarTiempo(SCREEN, tiempoPasado, configJuego) # colocamos el tiempo transcurrido y obtenemos el tiempo restante
 
