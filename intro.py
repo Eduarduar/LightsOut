@@ -7,6 +7,9 @@ reloj = pygame.time.Clock()
 
 
 def intro(SCREEN, accion = "abrir"):
+    """
+    Muestra una secuencia de imágenes en la pantalla de inicio del juego.
+    """
     i = 1
     muestra = 1
     while True:

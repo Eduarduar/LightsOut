@@ -36,6 +36,9 @@ izquierda = []
 
 # funcion para reiniciar las variables
 def reiniciar(personaje):
+    """
+    Reinicia todas las variables globales necesarias para el juego y carga las imágenes del personaje seleccionado.
+    """
     global segundoUltimoFoco
     global segundoAnterior
     global consumoPorSeg
@@ -57,6 +60,7 @@ def reiniciar(personaje):
     global imgs
     global fps
 
+    # Carga las imágenes del personaje seleccionado
     quietoD = pygame.image.load(f"assets/img/sprites/personajes/{personaje}/personaje1.png")
     quietoI = pygame.image.load(f"assets/img/sprites/personajes/{personaje}/personaje4.png")
 
@@ -70,6 +74,7 @@ def reiniciar(personaje):
         pygame.image.load(f"assets/img/sprites/personajes/{personaje}/personaje5.png"),
         pygame.image.load(f"assets/img/sprites/personajes/{personaje}/personaje6.png")]
         
+    # Reinicia todas las variables globales necesarias para el juego
     segundoUltimoFoco = 0
     color = (0, 255, 0)
     segundoAnterior = 0
@@ -192,6 +197,12 @@ def reiniciar(personaje):
 
 # cuando se apague un foco habra una pequeña posibilidad de soltar un powerup
 def soltarPowerUp():
+    """
+    Función que suelta un power-up aleatorio en el juego. 
+    El power-up puede ser de dos tipos: reducirConsumo o Velocidad.
+    Si el power-up es de tipo reducirConsumo, se activa el estado "reducirConsumo" y se reduce el consumo de energía del jugador.
+    Si el power-up es de tipo Velocidad, se activa el estado "Velocidad" y se aumenta la velocidad del jugador.
+    """
     global powerUps
     global subida
     activo = False
@@ -218,6 +229,11 @@ def soltarPowerUp():
 
 # funcion que controla los powerUps y los coloca en pantalla
 def pintarPowerUps(SCREEN, segundero):
+    """
+    Dibuja los power-ups en la pantalla y verifica si el personaje los toca para activarlos.
+    Si un power-up es activado, se resta un segundo al tiempo que dura activo cada segundo.
+    Si el tiempo llega a cero, el power-up se desactiva.
+    """
     global powerUps
     global infoPersonaje
     global segundoAnterior
@@ -245,6 +261,12 @@ def pintarPowerUps(SCREEN, segundero):
 
 # funcion para mostrar una pantalla de pausa antes de iniciar
 def pausaInicio(SCREEN, configJuego):
+    """
+    Esta función muestra una pantalla de inicio con información sobre el juego y espera a que el usuario presione una tecla o haga clic para continuar.
+    La pantalla se divide en varias partes que se muestran secuencialmente a medida que el usuario presiona una tecla o hace clic.
+    La función recibe como parámetros la pantalla del juego (SCREEN) y la configuración del juego (configJuego).
+    La función no devuelve nada, simplemente espera a que el usuario presione una tecla o haga clic para continuar.
+    """
     global infoPersonaje
     detener = True
     parte = 1
@@ -291,44 +313,50 @@ def pausaInicio(SCREEN, configJuego):
 
 # funcion para pintar al personaje
 def pintarPersonaje(SCREEN, accion = "caminar"):
-        global infoPersonaje
-        global fps
-        if powerUps["estados"]["Velocidad"]["activo"] == True: # verificamos si el powerUp de velocidad esta activo
-            infoPersonaje["velocidad"] = 15 # aumentamos la velocidad
-        else:
-            infoPersonaje["velocidad"] = 10 # volvemos a la velocidad normal
-        reloj.tick(fps) # fps
+    """
+    Dibuja al personaje en la pantalla según su estado y dirección.
+    """
+    global infoPersonaje
+    global fps
+    if powerUps["estados"]["Velocidad"]["activo"] == True: # verificamos si el powerUp de velocidad esta activo
+        infoPersonaje["velocidad"] = 15 # aumentamos la velocidad
+    else:
+        infoPersonaje["velocidad"] = 10 # volvemos a la velocidad normal
+    reloj.tick(fps) # fps
 
-        if accion == "caminar":
+    if accion == "caminar":
 
-            # colocamos el personaje segun su estado
-            if (infoPersonaje["cuentaPasos"] + 1) >= 3:
-                infoPersonaje["cuentaPasos"] = 0
+        # colocamos el personaje segun su estado
+        if (infoPersonaje["cuentaPasos"] + 1) >= 3:
+            infoPersonaje["cuentaPasos"] = 0
 
-            if infoPersonaje["direccion"] == "derecha" and infoPersonaje["quieto"] != True:
-                SCREEN.blit(derecha[infoPersonaje["cuentaPasos"] // 1], (int(infoPersonaje["PX"]), int(infoPersonaje["PY"])))
-                infoPersonaje["cuentaPasos"] += 1
-            
-            elif infoPersonaje["direccion"] == "izquierda" and infoPersonaje["quieto"] != True:
-                SCREEN.blit(izquierda[infoPersonaje["cuentaPasos"] // 1], (int(infoPersonaje["PX"]), int(infoPersonaje["PY"])))
-                infoPersonaje["cuentaPasos"] += 1
+        if infoPersonaje["direccion"] == "derecha" and infoPersonaje["quieto"] != True:
+            SCREEN.blit(derecha[infoPersonaje["cuentaPasos"] // 1], (int(infoPersonaje["PX"]), int(infoPersonaje["PY"])))
+            infoPersonaje["cuentaPasos"] += 1
+        
+        elif infoPersonaje["direccion"] == "izquierda" and infoPersonaje["quieto"] != True:
+            SCREEN.blit(izquierda[infoPersonaje["cuentaPasos"] // 1], (int(infoPersonaje["PX"]), int(infoPersonaje["PY"])))
+            infoPersonaje["cuentaPasos"] += 1
 
-            elif infoPersonaje["direccion"] == "derecha" and infoPersonaje["quieto"] == True:
-                SCREEN.blit(quietoD, (int(infoPersonaje["PX"]), int(infoPersonaje["PY"])))
+        elif infoPersonaje["direccion"] == "derecha" and infoPersonaje["quieto"] == True:
+            SCREEN.blit(quietoD, (int(infoPersonaje["PX"]), int(infoPersonaje["PY"])))
 
-            elif infoPersonaje["direccion"] == "izquierda" and infoPersonaje["quieto"] == True:
-                SCREEN.blit(quietoI, (int(infoPersonaje["PX"]), int(infoPersonaje["PY"])))
+        elif infoPersonaje["direccion"] == "izquierda" and infoPersonaje["quieto"] == True:
+            SCREEN.blit(quietoI, (int(infoPersonaje["PX"]), int(infoPersonaje["PY"])))
 
-            #reiniciamos el estado del personaje
-            infoPersonaje["quieto"] = False
-        else:
-            if infoPersonaje["direccion"] == "derecha":
-                SCREEN.blit(quietoD, (int(infoPersonaje["PX"]), int(infoPersonaje["PY"])))
-            elif infoPersonaje["direccion"] == "izquierda":
-                SCREEN.blit(quietoI, (int(infoPersonaje["PX"]), int(infoPersonaje["PY"])))
+        #reiniciamos el estado del personaje
+        infoPersonaje["quieto"] = False
+    else:
+        if infoPersonaje["direccion"] == "derecha":
+            SCREEN.blit(quietoD, (int(infoPersonaje["PX"]), int(infoPersonaje["PY"])))
+        elif infoPersonaje["direccion"] == "izquierda":
+            SCREEN.blit(quietoI, (int(infoPersonaje["PX"]), int(infoPersonaje["PY"])))
 
 # funcion para mover al personaje
 def moverPersonaje(SCREEN):
+    """
+    Mueve al personaje en la pantalla y realiza acciones según las teclas presionadas.
+    """
     global infoPersonaje
     global segundoAccion
     global tiempoPasado
@@ -380,6 +408,9 @@ def moverPersonaje(SCREEN):
 
 # función pinta las teclas que se puede usar
 def pintarTeclas(SCREEN):
+    """
+    Dibuja las teclas de acción en la pantalla dependiendo de la posición del personaje y los focos cercanos.
+    """
     global infoPersonaje
     global segundoAccion
     global teclaEstado
@@ -399,6 +430,9 @@ def pintarTeclas(SCREEN):
 
 # pinta las puertas abiertas
 def pintarPuerta(SCEEN):
+    """
+    Dibuja la puerta en la pantalla basándose en el estado de las luces.
+    """
     global focos
     for foco in focos["focosEstado"].items(): # recorremos los focos
         if foco[1]["abierta"] == True:
@@ -406,6 +440,10 @@ def pintarPuerta(SCEEN):
             
 # funcion para pintar los focos
 def pintarFocos(SCREEN, segundero):
+    """
+    Pinta los focos en la pantalla y actualiza su estado según el tiempo transcurrido.
+    También se encarga de encender nuevos focos y de actualizar el consumo de energía.
+    """
     global segundoUltimoFoco
     global segundoAnterior
     global consumoPorSeg
@@ -415,70 +453,92 @@ def pintarFocos(SCREEN, segundero):
     global powerUps
     global focos
     global color
-    if segundero != segundoAnterior: # verificamos si el tiempo cambio 
-        if consumoPorSeg == 2: # verificamos si el consumo por segundo es 2
+
+    # Verificamos si el tiempo ha cambiado
+    if segundero != segundoAnterior:
+        # Verificamos si el consumo por segundo es 2
+        if consumoPorSeg == 2:
             consumoPorSeg = 1
         else:
             consumoPorSeg = 2
-        tiempoPasado += 1 # si el tiempo cambio sumamos un segundo
-        if powerUps["estados"]["reducirConsumo"]["activo"] == True: # verificamos si el powerUp de reducir consumo esta activo
-            consumoTotal += (1 / 2) * focos["focosEncendidos"] # reducimos a la mitad el consumo de los focos encendidos
+        tiempoPasado += 1 # Si el tiempo cambió, sumamos un segundo
+        # Verificamos si el powerUp de reducir consumo está activo
+        if powerUps["estados"]["reducirConsumo"]["activo"] == True:
+            # Reducimos a la mitad el consumo de los focos encendidos
+            consumoTotal += (1 / 2) * focos["focosEncendidos"]
         else:
-            consumoTotal += consumoPorSeg * focos["focosEncendidos"] # sumamos el consumo de los focos encendidos
-        segundoAnterior = segundero # actualizamos el tiempo anterior
+            # Sumamos el consumo de los focos encendidos
+            consumoTotal += consumoPorSeg * focos["focosEncendidos"]
+        segundoAnterior = segundero # Actualizamos el tiempo anterior
 
-        for foco in focos["focosEstado"].items(): # recorremos los focos
+        # Recorremos los focos
+        for foco in focos["focosEstado"].items():
+            # Verificamos si la puerta está abierta
             if foco[1]["abierta"] == True:
                 foco[1]["abierta"] = False
                 pygame.mixer.Sound("assets/sounds/cerrarPuerta2.wav").play()
-            if foco[1]["estado"] == 1 or foco[1]["estado"] == 2 or foco[1]["estado"] == 3: # verificamos si el foco esta encendido
-                foco[1]["tiempoEncendido"] += 1 # si el foco esta encendido sumamos un segundo 
+            # Verificamos si el foco está encendido
+            if foco[1]["estado"] == 1 or foco[1]["estado"] == 2 or foco[1]["estado"] == 3:
+                # Si el foco está encendido, sumamos un segundo
+                foco[1]["tiempoEncendido"] += 1 
 
-                if foco[1]["tiempoEncendido"] >= 50: # verificamos si el foco esta encendido por mas de 70 segundos
+                # Verificamos si el foco está encendido por más de 70 segundos
+                if foco[1]["tiempoEncendido"] >= 50:
                     foco[1]["estado"] = 4
                     foco[1]["ultimoEstado"] = 4
                     focos["focosFundidos"] += 1
                     focos["focosEncendidos"] -= 1
-                    pygame.mixer.Sound("assets/sounds/romper.wav").play() # sonido de fundir foco
+                    pygame.mixer.Sound("assets/sounds/romper.wav").play() # Sonido de fundir foco
 
-                elif foco[1]["tiempoEncendido"] >= 30: # verificamos si el foco esta encendido por mas de 45 segundos
+                # Verificamos si el foco está encendido por más de 45 segundos
+                elif foco[1]["tiempoEncendido"] >= 30:
                     foco[1]["estado"] = 3
                     foco[1]["ultimoEstado"] = 3
 
-                elif foco[1]["tiempoEncendido"] >= 20: # verificamos si el foco esta encendido por mas de 30 segundos
+                # Verificamos si el foco está encendido por más de 30 segundos
+                elif foco[1]["tiempoEncendido"] >= 20:
                     foco[1]["estado"] = 2
                     foco[1]["ultimoEstado"] = 2
                     
-    # si hay 4 focos prendidos vamos a esperar 10 segundos para prender el siguiente foco
-
+    # Si hay 4 focos prendidos vamos a esperar 10 segundos para prender el siguiente foco
     if focos["focosEncendidos"] >= 4:
         focoPorSeg = 10
     else:
         focoPorSeg = 5
 
-    if segundoUltimoFoco + focoPorSeg <= tiempoPasado and focos["focosEncendidos"] != 5 - focos["focosFundidos"]: # verificamos si pasaron 5 segundos desde que se fundio el ultimo foco
-        segundoUltimoFoco = tiempoPasado # actualizamos el tiempo del ultimo foco encendido
+    # Verificamos si han pasado 5 segundos desde que se fundió el último foco
+    if segundoUltimoFoco + focoPorSeg <= tiempoPasado and focos["focosEncendidos"] != 5 - focos["focosFundidos"]:
+        segundoUltimoFoco = tiempoPasado # Actualizamos el tiempo del último foco encendido
         numFoco = 0
-        while True: # buscamos un foco apagado
-            numFoco = random.randint(1, focos["focosTotales"]) # elegimos un foco al azar
-            if focos["focosEstado"][f"foco{numFoco}"]["estado"] == 0: # verificamos si el foco esta apagado
+        while True:
+            # Elegimos un foco al azar
+            numFoco = random.randint(1, focos["focosTotales"])
+            # Verificamos si el foco está apagado
+            if focos["focosEstado"][f"foco{numFoco}"]["estado"] == 0:
                 break
-        # abrimos la puerta
+        # Abrimos la puerta
         focos["focosEstado"][f"foco{numFoco}"]["abierta"] = True
-        pygame.mixer.Sound("assets/sounds/abrirPuerta.wav").play() # sonido de abrir puerta
-        focos["focosEstado"][f"foco{numFoco}"]["estado"] = focos["focosEstado"][f"foco{numFoco}"]["ultimoEstado"] # encendemos el foco
-        focos["focosEncendidos"] += 1 # sumamos un foco encendido
-        pygame.mixer.Sound("assets/sounds/prenderFoco.wav").play() # sonido de encender foco
+        pygame.mixer.Sound("assets/sounds/abrirPuerta.wav").play() # Sonido de abrir puerta
+        # Encendemos el foco
+        focos["focosEstado"][f"foco{numFoco}"]["estado"] = focos["focosEstado"][f"foco{numFoco}"]["ultimoEstado"]
+        # Sumamos un foco encendido
+        focos["focosEncendidos"] += 1
+        pygame.mixer.Sound("assets/sounds/prenderFoco.wav").play() # Sonido de encender foco
 
-    # pintamos los focos encendidos
-    for foco in focos["focosEstado"].items(): # recorremos los focos
-        if foco[1]["estado"] != 0 and foco[1]["estado"] != 4: # verificamos si el foco esta apagado
-            SCREEN.blit(imgs[f"bombilla{foco[1]['estado']}"], foco[1]["posicion"]) # colocamos el foco en pantalla
+    # Pintamos los focos encendidos
+    for foco in focos["focosEstado"].items():
+        # Verificamos si el foco está apagado
+        if foco[1]["estado"] != 0 and foco[1]["estado"] != 4:
+            # Colocamos el foco en pantalla
+            SCREEN.blit(imgs[f"bombilla{foco[1]['estado']}"], foco[1]["posicion"])
         else:
             SCREEN.blit(imgs[f"sombras"][f"sombra{foco[1]['numero']}"], (0, 0))
 
 # funcion para mostrar una pantalla de game over
 def perder(SCREEN, configJuego, LvlsInfo, elementosFondo):
+    """
+    Función que muestra la pantalla de derrota del juego y espera a que el usuario presione una tecla para volver al menú principal.
+    """
     global focos
     pygame.mixer.Sound("assets/sounds/perder.ogg").play() # reproducimos el sonido en bucle
     configJuego["Volumen"] /= 4 # bajamos el volumen de la musica
@@ -530,6 +590,14 @@ def perder(SCREEN, configJuego, LvlsInfo, elementosFondo):
                     
 # funcion para mostrar una pantalla de ganaste
 def ganar(SCREEN, configJuego, LvlsInfo, elementosFondo):
+    """
+    Función que muestra la pantalla de victoria del nivel 1 del juego LightsOut.
+    Calcula el puntaje del jugador y muestra la pantalla de victoria con el puntaje obtenido.
+    Además, guarda una imagen de la pantalla de victoria, reproduce un sonido y baja el volumen de la música.
+    Espera 5 segundos antes de permitir que el jugador presione una tecla para volver al menú principal.
+    Si el jugador presiona una tecla, se actualiza la información del nivel completado y disponible, se sube el volumen de la música y se retorna la información actualizada.
+    Si el jugador cierra la ventana, se cierra el juego.
+    """
     global focos
     # calvulamos el score
 
@@ -594,25 +662,40 @@ def ganar(SCREEN, configJuego, LvlsInfo, elementosFondo):
 
 # funcion para pintar el tiempo transcurrido
 def pintarTiempo(SCREEN, tiempoPasado, configJuego):    
-        #a 120 le restamos el tiempoPasado para tener un temporizador de 2 minutos
-        relojF = 121 - tiempoPasado
+    """
+    Esta función pinta el tiempo transcurrido en la pantalla del juego.
+    Recibe como parámetros la pantalla del juego (SCREEN), el tiempo transcurrido (tiempoPasado) y la configuración del juego (configJuego).
+    Devuelve el tiempo restante en segundos.
+    """
+    #a 120 le restamos el tiempoPasado para tener un temporizador de 2 minutos
+    relojF = 121 - tiempoPasado
 
-        # formateamos los segundos de relojF para que se muestre con el formato mm:ss
-        minutos = relojF // 60
-        segundos = relojF % 60 
+    # formateamos los segundos de relojF para que se muestre con el formato mm:ss
+    minutos = relojF // 60
+    segundos = relojF % 60 
 
-        # creamos e imprimimos el tiempo transcurrido
+    # creamos e imprimimos el tiempo transcurrido
 
-        tiempo = get_font(30).render(f"{idioma[configJuego['Idioma']]['Juego']['Tiempo']}{minutos}:{segundos}s", True, "White")
-        tiempoRect = tiempo.get_rect(center=(740, 50))
+    tiempo = get_font(30).render(f"{idioma[configJuego['Idioma']]['Juego']['Tiempo']}{minutos}:{segundos}s", True, "White")
+    tiempoRect = tiempo.get_rect(center=(740, 50))
 
-        # colocamos el tempo
-        SCREEN.blit(tiempo, tiempoRect)
+    # colocamos el tempo
+    SCREEN.blit(tiempo, tiempoRect)
 
-        return relojF
+    return relojF
 
 # funcion para mostrar el nivel 1
 def pantalla_lvl1(SCREEN , configJuego, LvlsInfo, elementosFondo):
+    """
+    Función que muestra la pantalla del nivel 1 del juego LightsOut. 
+    Recibe como parámetros la pantalla del juego (SCREEN), la configuración del juego (configJuego), 
+    la información de los niveles (LvlsInfo) y los elementos del fondo (elementosFondo).
+    La función se encarga de cargar las imágenes del nivel, reproducir la música, 
+    mostrar el botón de pausa, mover al personaje, actualizar los estados de los powerUps y focos, 
+    dibujar la barra de consumo, pintar las puertas y teclas, colocar la sombra de los pasillos, 
+    verificar si el jugador ganó o perdió y retornar la pantalla del juego, la configuración del juego, 
+    la información de los niveles y los elementos del fondo actualizados.
+    """
     global segundoUltimoFoco
     global segundoAnterior
     global consumoPorSeg

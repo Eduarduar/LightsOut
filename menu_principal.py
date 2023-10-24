@@ -21,61 +21,73 @@ def mover_fondo(SCREEN, img, elemento, velocidad):
     elemento["posX"] = posX
 
 def menu_principal(SCREEN , configJuego, LvlsInfo, elementosFondo):
+    """
+    Función que muestra el menú principal del juego y permite al usuario navegar a través de las diferentes opciones.
+    """
+    # Cargamos la música y la reproducimos en bucle
     if configJuego["indiceMusic"] != 1:
         configJuego["indiceMusic"] = 1
-        pygame.mixer.music.load(f"assets/songs/musica{configJuego['indiceMusic']}.wav") #cargamos la musica
-        pygame.mixer.music.set_volume(configJuego["Volumen"]) #le bajamos el volumen a la musica
-        pygame.mixer.music.play(-1) #reproducimos la musica en bucle
+        pygame.mixer.music.load(f"assets/songs/musica{configJuego['indiceMusic']}.wav")
+        pygame.mixer.music.set_volume(configJuego["Volumen"])
+        pygame.mixer.music.play(-1)
 
+    # Cargamos las imágenes del menú principal
     imgs = imgs_menu_principal(configJuego["Idioma"])
     
+    # Establecemos el título de la ventana
     pygame.display.set_caption(idioma[configJuego["Idioma"]]["MenuInicial"]["Titulo"])
 
     while True:
-        # hacemos que el fondo se mueva en bucle 
-
+        # Movemos los elementos de fondo en bucle
         mover_fondo(SCREEN ,imgs["ciudad"] ,elementosFondo["ciudad"], 2)
         mover_fondo(SCREEN ,imgs["luna"] ,elementosFondo["luna"], 0.5)
         mover_fondo(SCREEN ,imgs["nube"] ,elementosFondo["nube"], 1)
 
-        MENU_MOUSE_POS = pygame.mouse.get_pos() # obtenemos la posicion del mouse
+        # Obtenemos la posición del mouse
+        MENU_MOUSE_POS = pygame.mouse.get_pos()
 
+        # Renderizamos el título del menú
         MENU_TEXT = get_font(70).render(idioma[configJuego["Idioma"]]["Titulo"], True, "#97ffc6")
         MENU_RECT = MENU_TEXT.get_rect(center=(640, 100))
+        SCREEN.blit(MENU_TEXT, MENU_RECT)
 
+        # Creamos los botones del menú
         PLAY_BUTTON = Button(image1=pygame.transform.scale(imgs["botones"][configJuego["Idioma"]]["jugar"]["normal"], (550, 100)), pos=(640, 250),  text_input="", font=get_font(75), base_color="#d7fcd4", hovering_color="#48ba84", image2=pygame.transform.scale(imgs["botones"][configJuego["Idioma"]]["jugar"]["presionado"], (550, 100)))
         OPTIONS_BUTTON = Button(image1=pygame.transform.scale(imgs["botones"][configJuego["Idioma"]]["opciones"]["normal"], (550, 100)), pos=(640, 370), text_input="", font=get_font(75), base_color="#d7fcd4", hovering_color="#48ba84", image2=pygame.transform.scale(imgs["botones"][configJuego["Idioma"]]["opciones"]["presionado"], (550, 100)))
         CHANGEAVATAR_BUTTON = Button(image1=pygame.transform.scale(imgs["botones"][configJuego["Idioma"]]["avatar"]["normal"], (550, 100)), pos=(640, 490), text_input="", font=get_font(75), base_color="#d7fcd4", hovering_color="#48ba84", image2=pygame.transform.scale(imgs["botones"][configJuego["Idioma"]]["avatar"]["presionado"], (550, 100)))
         QUIT_BUTTON = Button(image1=pygame.transform.scale(imgs["botones"][configJuego["Idioma"]]["atras"]["normal"], (550, 100)), pos=(640, 610), text_input="", font=get_font(75), base_color="#d7fcd4", hovering_color="#48ba84", image2=pygame.transform.scale(imgs["botones"][configJuego["Idioma"]]["atras"]["presionado"], (550, 100)))
 
-        SCREEN.blit(MENU_TEXT, MENU_RECT)
-
-        for button in [PLAY_BUTTON, OPTIONS_BUTTON, QUIT_BUTTON, CHANGEAVATAR_BUTTON]: # recorremos los botones
-            button.changeColor(MENU_MOUSE_POS) # cambiamos el color de los botones
-            button.update(SCREEN) # actualizamos los botones
+        # Actualizamos los botones y cambiamos su color si el mouse está sobre ellos
+        for button in [PLAY_BUTTON, OPTIONS_BUTTON, QUIT_BUTTON, CHANGEAVATAR_BUTTON]:
+            button.changeColor(MENU_MOUSE_POS)
+            button.update(SCREEN)
         
-        for event in pygame.event.get(): # detectamos los eventos
+        # Detectamos los eventos del usuario
+        for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                # Si el usuario cierra la ventana, cerramos el juego
                 intro(SCREEN, accion = "cerrar")
                 pygame.quit()
                 sys.exit()
-            if event.type == pygame.MOUSEBUTTONDOWN: # si el evento es un click del mouse
-                if PLAY_BUTTON.checkForInput(MENU_MOUSE_POS): # detectamos si el click fue en el boton de jugar
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                # Si el usuario hace click en un botón, realizamos la acción correspondiente
+                if PLAY_BUTTON.checkForInput(MENU_MOUSE_POS):
                     if configJuego["historia"]:
                         pantalla_de_carga(SCREEN, configJuego)
                         historia(SCREEN, configJuego["personaje"])
                         configJuego["historia"] = False
-                    SCREEN , configJuego, LvlsInfo, elementosFondo = niveles(SCREEN , configJuego, LvlsInfo, elementosFondo) # si fue en el boton de jugar, vamos a la pantalla de niveles
+                    SCREEN , configJuego, LvlsInfo, elementosFondo = niveles(SCREEN , configJuego, LvlsInfo, elementosFondo)
                     pygame.display.set_caption(idioma[configJuego["Idioma"]]["MenuInicial"]["Titulo"])
-                if OPTIONS_BUTTON.checkForInput(MENU_MOUSE_POS): # detectamos si el click fue en el boton de opciones
-                    SCREEN , configJuego, LvlsInfo, elementosFondo = opciones(SCREEN , configJuego, LvlsInfo, elementosFondo) # si fue en el boton de opciones, vamos a la pantalla de opciones
+                if OPTIONS_BUTTON.checkForInput(MENU_MOUSE_POS):
+                    SCREEN , configJuego, LvlsInfo, elementosFondo = opciones(SCREEN , configJuego, LvlsInfo, elementosFondo)
                     pygame.display.set_caption(idioma[configJuego["Idioma"]]["MenuInicial"]["Titulo"])
-                if CHANGEAVATAR_BUTTON.checkForInput(MENU_MOUSE_POS): # detectamos si el click fue en el boton de cambiar avatar
+                if CHANGEAVATAR_BUTTON.checkForInput(MENU_MOUSE_POS):
                     SCREEN , configJuego = pantallaCambiarAvatar(SCREEN , configJuego)
                     pygame.display.set_caption(idioma[configJuego["Idioma"]]["MenuInicial"]["Titulo"])
-                if QUIT_BUTTON.checkForInput(MENU_MOUSE_POS): # detectamos si el click fue en el boton de salir
-                    pygame.quit() # si fue en el boton de salir, salimos del juego
+                if QUIT_BUTTON.checkForInput(MENU_MOUSE_POS):
+                    pygame.quit()
                     sys.exit()
 
+        # Actualizamos la pantalla y establecemos el límite de FPS
         pygame.display.update()
         reloj.tick(30)
