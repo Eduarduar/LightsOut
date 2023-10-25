@@ -351,6 +351,25 @@ def moverPersonaje(SCREEN):
         infoPersonaje["quieto"] = True
         pintarPersonaje(SCREEN, accion="quieto")
 
+def pintarTeclas(SCREEN):
+    global infoPersonaje
+    global segundoAccion
+    global teclaEstado
+    global focos
+
+    for foco in focos["focosEstado"].items():
+        if foco[1]["estado"] != 0 and foco[1]["estado"] != 4 and infoPersonaje["piso"] == foco[1]["piso"]:
+            if infoPersonaje["PX"] >= foco[1]["apagadorX1"] - infoPersonaje["ancho"] and infoPersonaje["PX"] <= foco[1]["apagadorX2"] + infoPersonaje["ancho"]:
+                SCREEN.blit(imgs[f"espacio{teclaEstado}"],(int(infoPersonaje["PX"])-20,int(infoPersonaje["PX"])+80))
+                teclaEstado += 1
+
+    if (infoPersonaje["PX"]>=205 and infoPersonaje["PX"]<=252) or (infoPersonaje["ancho"] + infoPersonaje["PX"]>=205 and infoPersonaje["PX"] + infoPersonaje["ancho"]<=252):
+        SCREEN.blit(imgs[f"w{teclaEstado}"],(int(infoPersonaje["PX"]),int(infoPersonaje["PX"])-50))
+        teclaEstado += 1
+
+    if teclaEstado >2:
+        teclaEstado = 1
+
 # función para pintar la barra de consumo
 def pintarFocos(SCREEN, segundero):
     """
