@@ -321,6 +321,16 @@ def moverPersonaje(SCREEN):
         infoPersonaje["direccion"] = "derecha"
         pintarPersonaje(SCREEN, accion="caminar")
 
+    elif keys[pygame.K_w] and ((infoPersonaje["PX"] >= 205 and infoPersonaje["PX"] <= 252) or (infoPersonaje["ancho"] + infoPersonaje["PX"] >= 205 and infoPersonaje["PX"] + infoPersonaje["ancho"] <= 252)):
+        if infoPersonaje["piso"] == 1 and segundoAccion != tiempoPasado:
+            infoPersonaje["piso"] = 2
+            infoPersonaje["PY"] -= 180
+        elif segundoAccion != tiempoPasado:
+            infoPersonaje["piso"] = 1
+            infoPersonaje["PY"] += 180
+        segundoAccion = tiempoPasado
+        pintarPersonaje(SCREEN)   
+
     # Tecla Espacio
     elif keys[pygame.K_SPACE]:
         for foco in focos["focosEstado"].items(): # recorremos los focos
