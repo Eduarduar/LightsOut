@@ -350,24 +350,37 @@ def moverPersonaje(SCREEN):
         infoPersonaje["quieto"] = True
         pintarPersonaje(SCREEN, accion="quieto")
 
+# función pinta las teclas que se puede usar
 def pintarTeclas(SCREEN):
+    """
+    Dibuja las teclas de acción en la pantalla dependiendo de la posición del personaje y los focos cercanos.
+    """
     global infoPersonaje
     global segundoAccion
     global teclaEstado
     global focos
-
-    for foco in focos["focosEstado"].items():
-        if foco[1]["estado"] != 0 and foco[1]["estado"] != 4 and infoPersonaje["piso"] == foco[1]["piso"]:
+    for foco in focos["focosEstado"].items(): # recorremos los focos
+        if foco[1]["estado"] != 0 and foco[1]["estado"] != 4 and infoPersonaje["piso"] == foco[1]["piso"]: # verificamos si el foco esta apagado
             if infoPersonaje["PX"] >= foco[1]["apagadorX1"] - infoPersonaje["ancho"] and infoPersonaje["PX"] <= foco[1]["apagadorX2"] + infoPersonaje["ancho"]:
-                SCREEN.blit(imgs[f"espacio{teclaEstado}"],(int(infoPersonaje["PX"])-20,int(infoPersonaje["PX"])+80))
+                SCREEN.blit(imgs[f"espacio{teclaEstado}"], (int(infoPersonaje["PX"]) - 20, int(infoPersonaje["PY"]) + 80))
                 teclaEstado += 1
 
-    if (infoPersonaje["PX"]>=205 and infoPersonaje["PX"]<=252) or (infoPersonaje["ancho"] + infoPersonaje["PX"]>=205 and infoPersonaje["PX"] + infoPersonaje["ancho"]<=252):
-        SCREEN.blit(imgs[f"w{teclaEstado}"],(int(infoPersonaje["PX"]),int(infoPersonaje["PX"])-50))
+    if (infoPersonaje["PX"] >= 205 and infoPersonaje["PX"] <= 252) or (infoPersonaje["ancho"] + infoPersonaje["PX"] >= 205 and infoPersonaje["PX"] + infoPersonaje["ancho"] <= 252):
+        SCREEN.blit(imgs[f"w{teclaEstado}"], (int(infoPersonaje["PX"]), int(infoPersonaje["PY"]) - 50))
         teclaEstado += 1
 
-    if teclaEstado >2:
+    if teclaEstado > 2:
         teclaEstado = 1
+
+# pinta las puertas abiertas
+def pintarPuerta(SCEEN):
+    """
+    Dibuja la puerta en la pantalla basándose en el estado de las luces.
+    """
+    global focos
+    for foco in focos["focosEstado"].items(): # recorremos los focos
+        if foco[1]["abierta"] == True:
+            SCEEN.blit(imgs["abierta"], foco[1]["posPuerta"])
 
 # función para pintar la barra de consumo
 def pintarFocos(SCREEN, segundero):
@@ -535,6 +548,12 @@ def pantalla_lvl2(SCREEN , configJuego, LvlsInfo, elementosFondo):
 
         # Pintamos la barra de consumo
         pygame.draw.rect(SCREEN,color, (1147,(509-consumoTotal), 40, consumoTotal))
+
+        # pintamos las puertas abiertas
+        pintarPuerta(SCREEN)
+
+        # pintamos los indicadores de las teclas
+        pintarTeclas(SCREEN)
 
         # Colocamos la sombra del nivel
         SCREEN.blit(imgs["sombra_lvl2"], (0,0)) 
