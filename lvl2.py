@@ -25,7 +25,7 @@ color = ()
 fps = 0
 powerUps = {}
 imgs = {}
-teclaEstado = 0
+teclaEstado = 1
 subida = 0
 
 quietoD = ""
@@ -381,17 +381,17 @@ def pintarPuerta(SCEEN):
     for foco in focos["focosEstado"].items(): # recorremos los focos
         if foco[1]["abierta"] == True:
             SCEEN.blit(imgs["abierta"], foco[1]["posPuerta"])
-
-# función para pintar la barra de consumo
+            
+# funcion para pintar los focos
 def pintarFocos(SCREEN, segundero):
     """
-    Esta función se encarga de pintar los focos en la pantalla y actualizar su estado según el tiempo transcurrido.
-    Además, verifica si ha pasado el tiempo suficiente para fundir un foco y lo enciende en caso de que haya uno apagado disponible.
+    Pinta los focos en la pantalla y actualiza su estado según el tiempo transcurrido.
+    También se encarga de encender nuevos focos y de actualizar el consumo de energía.
     """
     global segundoUltimoFoco
     global segundoAnterior
-    global consumoTotal
     global consumoPorSeg
+    global consumoTotal
     global tiempoPasado
     global focoPorSeg
     global powerUps
@@ -399,82 +399,77 @@ def pintarFocos(SCREEN, segundero):
     global color
 
     # Verificamos si el tiempo ha cambiado
-    if segundero != segundoAnterior: 
+    if segundero != segundoAnterior:
         # Verificamos si el consumo por segundo es 2
-        if consumoPorSeg == 2: 
+        if consumoPorSeg == 2:
             consumoPorSeg = 1
         else:
             consumoPorSeg = 2
-            
         tiempoPasado += 1 # Si el tiempo cambió, sumamos un segundo
         # Verificamos si el powerUp de reducir consumo está activo
-        if powerUps["estados"]["reducirConsumo"]["activo"] == True:  
+        if powerUps["estados"]["reducirConsumo"]["activo"] == True:
             # Reducimos a la mitad el consumo de los focos encendidos
-            consumoTotal += (1/2) * focos["focosEncendidos"]  
+            consumoTotal += (1 / 2) * focos["focosEncendidos"]
         else:
             # Sumamos el consumo de los focos encendidos
-            consumoTotal += consumoPorSeg * focos["focosEncendidos"] 
-
+            consumoTotal += consumoPorSeg * focos["focosEncendidos"]
         segundoAnterior = segundero # Actualizamos el tiempo anterior
-        
+
         # Recorremos los focos
-        for foco in focos["focosEstado"].items(): 
+        for foco in focos["focosEstado"].items():
             # Verificamos si la puerta está abierta
             if foco[1]["abierta"] == True:
                 foco[1]["abierta"] = False
-                # Sonido de cerrar puerta
                 pygame.mixer.Sound("assets/sounds/cerrarPuerta2.wav").play()
-
             # Verificamos si el foco está encendido
-            if foco[1]["estado"] == 1 or foco[1]["estado"] == 2 or foco[1]["estado"] == 3: 
-                foco[1]["tiempoEncendido"] += 1 # Si el foco está encendido, sumamos un segundo 
+            if foco[1]["estado"] == 1 or foco[1]["estado"] == 2 or foco[1]["estado"] == 3:
+                # Si el foco está encendido, sumamos un segundo
+                foco[1]["tiempoEncendido"] += 1 
 
                 # Verificamos si el foco está encendido por más de 70 segundos
-                if foco[1]["tiempoEncendido"] >= 50: 
+                if foco[1]["tiempoEncendido"] >= 50:
                     foco[1]["estado"] = 4
                     foco[1]["ultimoEstado"] = 4
                     focos["focosFundidos"] += 1
                     focos["focosEncendidos"] -= 1
-                    # Sonido de fundir foco
-                    pygame.mixer.Sound("assets/sounds/romper.wav").play() 
+                    pygame.mixer.Sound("assets/sounds/romper.wav").play() # Sonido de fundir foco
 
                 # Verificamos si el foco está encendido por más de 45 segundos
-                elif foco[1]["tiempoEncendido"] >= 30: 
+                elif foco[1]["tiempoEncendido"] >= 30:
                     foco[1]["estado"] = 3
                     foco[1]["ultimoEstado"] = 3
 
                 # Verificamos si el foco está encendido por más de 30 segundos
-                elif foco[1]["tiempoEncendido"] >= 20: 
+                elif foco[1]["tiempoEncendido"] >= 20:
                     foco[1]["estado"] = 2
                     foco[1]["ultimoEstado"] = 2
 
-            # Verificamos si han pasado 5 segundos desde que se fundió el último foco y si hay focos apagados disponibles
-            if segundoUltimoFoco + focoPorSeg <= tiempoPasado and focos["focosEncendidos"] != 5 - focos["focosFundidos"]: 
-                segundoUltimoFoco = tiempoPasado # Actualizamos el tiempo del último foco encendido
-                numFoco = 0
-                while True: # Buscamos un foco apagado
-                    numFoco = random.randint(1, focos["focosTotales"]) # Elegimos un foco al azar
-                    if focos["focosEstado"][f"foco{numFoco}"]["estado"] == 0: # Verificamos si el foco está apagado
-                        break
-                # Abrimos la puerta
-                focos["focosEstado"][f"foco{numFoco}"]["abierta"] = True
-                # Sonido de abrir puerta
-                pygame.mixer.Sound("assets/sounds/abrirPuerta.wav").play() 
-
-                # Encendemos el foco
-                focos["focosEstado"][f"foco{numFoco}"]["estado"] = focos["focosEstado"][f"foco{numFoco}"]["ultimoEstado"] # Encendemos el foco
-                focos["focosEncendidos"] += 1 # Sumamos un foco encendido
-                # Sonido de encender foco
-                pygame.mixer.Sound("assets/sounds/prenderFoco.wav").play() 
+    # Verificamos si han pasado 5 segundos desde que se fundió el último foco
+    if segundoUltimoFoco + focoPorSeg <= tiempoPasado and focos["focosEncendidos"] != 5 - focos["focosFundidos"]:
+        segundoUltimoFoco = tiempoPasado # Actualizamos el tiempo del último foco encendido
+        numFoco = 0
+        while True:
+            # Elegimos un foco al azar
+            numFoco = random.randint(1, focos["focosTotales"])
+            # Verificamos si el foco está apagado
+            if focos["focosEstado"][f"foco{numFoco}"]["estado"] == 0:
+                break
+        # Abrimos la puerta
+        focos["focosEstado"][f"foco{numFoco}"]["abierta"] = True
+        pygame.mixer.Sound("assets/sounds/abrirPuerta.wav").play() # Sonido de abrir puerta
+        # Encendemos el foco
+        focos["focosEstado"][f"foco{numFoco}"]["estado"] = focos["focosEstado"][f"foco{numFoco}"]["ultimoEstado"]
+        # Sumamos un foco encendido
+        focos["focosEncendidos"] += 1
+        pygame.mixer.Sound("assets/sounds/prenderFoco.wav").play() # Sonido de encender foco
 
     # Pintamos los focos encendidos
-    for foco in focos["focosEstado"].items(): # Recorremos los focos
-        # Verificamos si el foco está encendido
-        if foco[1]["estado"] != 0 and foco[1]["estado"] != 4: 
+    for foco in focos["focosEstado"].items():
+        # Verificamos si el foco está apagado
+        if foco[1]["estado"] != 0 and foco[1]["estado"] != 4:
             # Colocamos el foco en pantalla
-            SCREEN.blit(imgs[f"bombilla{foco[1]['estado']}"], foco[1]["posicion"]) 
+            SCREEN.blit(imgs[f"bombilla{foco[1]['estado']}"], foco[1]["posicion"])
         else:
-            # Colocamos la sombra del foco en pantalla
             SCREEN.blit(imgs[f"sombras"][f"sombra{foco[1]['numero']}"], (0, 0))
 
 def pantalla_lvl2(SCREEN , configJuego, LvlsInfo, elementosFondo):
