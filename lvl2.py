@@ -3,6 +3,8 @@ from assets.defaults.button import Button
 from assets.defaults.get_fonts import get_font
 from assets.defaults.idioma import cargar_idioma
 from assets.defaults.get_imgs import imgs_lvl2
+from carga import pantalla_de_carga
+from opciones_juego import opciones_juego
 from intro import intro
 
 idioma = cargar_idioma()
@@ -582,6 +584,31 @@ def ganar(SCREEN, configJuego, LvlsInfo, elementosFondo):
                 intro(SCREEN, accion = "cerrar")
                 pygame.quit()
                 sys.exit()
+
+# funcion para pintar el tiempo transcurrido
+def pintarTiempo(SCREEN, tiempoPasado, configJuego):    
+    """
+    Esta función pinta el tiempo transcurrido en la pantalla del juego.
+    Recibe como parámetros la pantalla del juego (SCREEN), el tiempo transcurrido (tiempoPasado) y la configuración del juego (configJuego).
+    Devuelve el tiempo restante en segundos.
+    """
+    #a 120 le restamos el tiempoPasado para tener un temporizador de 2 minutos
+    relojF = 121 - tiempoPasado
+
+    # formateamos los segundos de relojF para que se muestre con el formato mm:ss
+    minutos = relojF // 60
+    segundos = relojF % 60 
+
+    # creamos e imprimimos el tiempo transcurrido
+
+    tiempo = get_font(30).render(f"{idioma[configJuego['Idioma']]['Juego']['Tiempo']}{minutos}:{segundos}s", True, "White")
+    tiempoRect = tiempo.get_rect(center=(740, 50))
+
+    # colocamos el tempo
+    SCREEN.blit(tiempo, tiempoRect)
+
+    return relojF
+
 def pantalla_lvl2(SCREEN , configJuego, LvlsInfo, elementosFondo):
     """
     Función encargada de mostrar la pantalla del nivel 2 del juego LightsOut.
@@ -625,6 +652,30 @@ def pantalla_lvl2(SCREEN , configJuego, LvlsInfo, elementosFondo):
                 pygame.quit()
                 sys.exit()
 
+            if event.type == pygame.KEYDOWN:
+                # comprobamos si preciono la tecla escape
+                if event.key == pygame.K_ESCAPE:
+                    SCREEN , configJuego, LvlsInfo, elementosFondo, accion = opciones_juego(SCREEN , configJuego, LvlsInfo, elementosFondo)
+                    pygame.display.set_caption(idioma[configJuego["Idioma"]]["Nivel1"]["Titulo"])
+                    if accion == "salir":
+                        pantalla_de_carga(SCREEN, configJuego)
+                        return SCREEN , configJuego, LvlsInfo, elementosFondo
+                    elif accion == "reiniciar":
+                        pausaInicio(SCREEN, configJuego)
+                        reiniciar(configJuego["personaje"])
+
+            # eventos del raton
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if btnOpciones.checkForInput(posicionMause):
+                    SCREEN , configJuego, LvlsInfo, elementosFondo, accion = opciones_juego(SCREEN , configJuego, LvlsInfo, elementosFondo)
+                    pygame.display.set_caption(idioma[configJuego["Idioma"]]["Nivel1"]["Titulo"])
+                    if accion == "salir":
+                        pantalla_de_carga(SCREEN, configJuego)
+                        return SCREEN , configJuego, LvlsInfo, elementosFondo
+                    elif accion == "reiniciar":
+                        pausaInicio(SCREEN, configJuego)
+                        reiniciar(configJuego["personaje"])
+
         # Obtenemos el tiempo actual
         segundero = time.localtime().tm_sec 
 
@@ -659,6 +710,16 @@ def pantalla_lvl2(SCREEN , configJuego, LvlsInfo, elementosFondo):
 
         # pintamos los indicadores de las teclas
         pintarTeclas(SCREEN)
+
+        relojF = pintarTiempo(SCREEN, tiempoPasado, configJuego) # colocamos el tiempo transcurrido y obtenemos el tiempo restante
+
+        apagadosText = get_font(25).render(f"X{focos['focosApagados']}", True, "White")
+        apagadosRect = apagadosText.get_rect(center=(1229, 667))
+        SCREEN.blit(apagadosText, apagadosRect)
+
+        fundidosText = get_font(25).render(f"X{focos['focosFundidos']}", True, "White")
+        fundidosRect = fundidosText.get_rect(center=(1229, 583))
+        SCREEN.blit(fundidosText, fundidosRect)
 
         # Colocamos la sombra del nivel
         SCREEN.blit(imgs["sombra_lvl2"], (0,0)) 
