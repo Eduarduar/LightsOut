@@ -8,6 +8,11 @@ from intro import intro
 idioma = cargar_idioma()
 reloj = pygame.time.Clock()
 accion = False
+segundoUltimoFoco = 0
+focosFundidos = 0
+focosApagados = 0
+focosEncendidos = 0
+
 
 PISOS = {
     1: 615,
@@ -18,39 +23,6 @@ PISOS = {
 # Inicializamos las variables
 
 class Foco:
-    """
-    Clase que representa un foco en el juego Lights Out.
-
-    Atributos:
-    ----------
-    numero : int
-        Número del foco.
-    tiempo_encendido : int
-        Tiempo que el foco ha estado encendido.
-    posicion : tuple
-        Coordenadas (x, y) de la posición del foco en la pantalla.
-    apagador : int
-        Número del apagador al que está conectado el foco.
-    posicion_puerta : tuple
-        Coordenadas (x, y) de la posición de la puerta en la pantalla.
-    piso : int
-        Número del piso en el que se encuentra el foco.
-
-    Métodos:
-    -------
-    prender()
-        Enciende el foco.
-    apagar()
-        Apaga el foco.
-    aumentarTiempo()
-        Aumenta el tiempo que el foco ha estado encendido y cambia su estado según el tiempo.
-    cambiarEstadoPuerta(estado)
-        Cambia el estado de la puerta a abierto o cerrado.
-    pintar(SCREEN, imgs)
-        Dibuja el foco en la pantalla según su estado.
-    reiniciar()
-        Reinicia el foco a su estado inicial.
-    """
 
     def __init__(self, numero, posicion, apagador1, posicion_puerta, piso):
         """
@@ -78,13 +50,18 @@ class Foco:
         self.posicion = posicion
         self.apagador1 = apagador1
         self.apagador2 = apagador1 + 7
-        self.estadoPuerta = 1
+        self.estadoPuerta = 1 # 1 = cerrado, 2 = abierto
         self.posicion_puerta = posicion_puerta
         self.piso = piso
 
     def prender(self):
         """Enciende el foco."""
         self.estado = self.ultimo_estado
+        self.estadoPuerta = 2
+
+    def cerrarPuerta(self):
+        """Cierra la puerta."""
+        self.estadoPuerta = 1
 
     def apagar(self):
         """Apaga el foco."""
@@ -93,26 +70,19 @@ class Foco:
 
     def aumentarTiempo(self):
         """Aumenta el tiempo que el foco ha estado encendido y cambia su estado según el tiempo."""
+        global focosFundidos, focosEncendidos
+        self.tiempo_encendido += 1
         if self.tiempo_encendido > 60:
             self.estado = 4
             self.ultimo_estado = 4
+            focosFundidos += 1
+            focosEncendidos -= 1
         elif self.tiempo_encendido > 30:
             self.estado = 3
             self.ultimo_estado = 3
         elif self.tiempo_encendido > 20:
             self.estado = 2
             self.ultimo_estado = 2
-
-    def cambiarEstadoPuerta(self, estado):
-        """
-        Cambia el estado de la puerta a abierto o cerrado.
-
-        Parámetros:
-        ----------
-        estado : int
-            Estado de la puerta. 1 = cerrado, 0 = abierto.
-        """
-        self.estadoPuerta = estado
 
     def pintar(self, SCREEN, imgs):
         """
@@ -129,6 +99,8 @@ class Foco:
             SCREEN.blit(imgs[f"sombra{self.numero}"], (0, 0))
         else:
             SCREEN.blit(imgs[f"bombilla{self.estado}"], self.posicion)
+            if self.estadoPuerta == 2:
+                SCREEN.blit(imgs["puertaon"], self.posicion_puerta)
 
     def reiniciar(self):
         """Reinicia el foco a su estado inicial."""
@@ -335,14 +307,16 @@ class Temporizador():
         self.minutos = 2
         self.segundos = 0
 
-    def comprobarTiempo(self):
-        cambio = False
+    def actualizarTiempo(self):
         if self.tiempoActual != self.tiempoAnterior:
             self.tiempoPasado += 1
             self.tiempoAnterior = self.tiempoActual
-            cambio = True
         self.tiempoActual = time.localtime().tm_sec
-        return cambio
+
+    def comprobarTiempo(self):
+        if self.tiempoActual != self.tiempoAnterior:
+            return True
+        return False
 
     def bajarTiempo(self):
         """
@@ -412,7 +386,7 @@ class Personaje():
         - key (pygame.key.get_pressed()): tecla presionada por el usuario.
         - focos (Foco): diccionario que contiene los focos del juego.
         """
-        global accion
+        global accion, focosApagados, focosEncendidos
 
         if key[pygame.K_a] and self.PX > 100 and self.PX - self.velocidad > 100:
             self.PX -= self.velocidad
@@ -442,6 +416,8 @@ class Personaje():
                 if foco.estado != 0 and foco.estado != 4 and self.piso == foco.piso:
                     if self.PX >= foco.apagador1 - self.ancho and self.PX <= foco.apagador2 + self.ancho:
                         foco.apagar()
+                        focosApagados += 1
+                        focosEncendidos -= 1
         else:
             self.estado = 0
             self.fotograma = 1
@@ -467,6 +443,29 @@ class Personaje():
             self.fotograma += 1
             if self.fotograma > 3:
                 self.fotograma = 1
+
+def prenderFocoAzar(focos, Contador):
+    """
+    Función que prende o apaga un foco al azar.
+
+    Args:
+    - focos: diccionario que contiene los focos del juego.
+    - Contador: Objeto Temporizador que contiene el tiempo del juego.
+
+    Returns:
+    - None
+    """
+    global segundoUltimoFoco, focosFundidos, focosEncendidos
+    if segundoUltimoFoco + 4 <= Contador.tiempoPasado and focosEncendidos != 7 - focosFundidos:
+        segundoUltimoFoco = Contador.tiempoPasado
+        while True:
+            numFoco = random.randint(1, 7)
+            if focos[f"foco{numFoco}"].estado == 0:
+                focos[f"foco{numFoco}"].prender()
+                focosEncendidos += 1
+                break
+        pygame.mixer.Sound("assets/sounds/abrirPuerta.wav").play() # Sonido de abrir puerta
+        pygame.mixer.Sound("assets/sounds/prenderFoco.wav").play() # Sonido de encender foco
 
 def pantalla_lvl3(SCREEN , configJuego, LvlsInfo, elementosFondo):
     """
@@ -538,8 +537,15 @@ def pantalla_lvl3(SCREEN , configJuego, LvlsInfo, elementosFondo):
         btnPausa.changeColor(pygame.mouse.get_pos())
         btnPausa.update(SCREEN)
 
+        Contador.actualizarTiempo()
         if  Contador.comprobarTiempo(): 
             Contador.bajarTiempo()
+            for foco in focos.values():
+                if foco.estadoPuerta == 2:
+                    foco.cerrarPuerta()
+                if foco.estado != 0 and foco.estado != 4:
+                    foco.aumentarTiempo()
+                    
             BarraConsumo.aumentarConsumo(focos)
             if accion == False:
                 accion = True
@@ -548,6 +554,8 @@ def pantalla_lvl3(SCREEN , configJuego, LvlsInfo, elementosFondo):
 
         Jugador.mover(evento, focos)
         Jugador.pintar(SCREEN, imgs)
+
+        prenderFocoAzar(focos, Contador)
 
         # imprimimos los focos
         for foco in focos.values():
