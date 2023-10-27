@@ -32,11 +32,11 @@ LvlsInfo = {
     "LvlDisponibles" : {
         "lvl1": True,
         "lvl2": True,
-        "lvl3": False
+        "lvl3": True
     },
     "LvlCompletados":{
         "lvl1": True,
-        "lvl2": False,
+        "lvl2": True,
         "lvl3": False
     }
 }

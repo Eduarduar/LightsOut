@@ -252,13 +252,14 @@ def imgs_lvl2(idioma):
     return imgs
 
 def imgs_lvl3(idioma, sexo):
-    fondo = pygame.image.load("assets/img/lvl3/fondo.png")
+    w1 = pygame.image.load("assets/img/botones/W1.png")
+    w2 = pygame.image.load("assets/img/botones/W2.png")
+    fondo = pygame.image.load("assets/img/lvl3/fondo_lvl3.png")
+    sombrasLvl3 = pygame.image.load("assets/img/lvl3/sombra_lvl3.png")
     quietoIzq = pygame.image.load(f"assets/img/sprites/personajes/{sexo}3/personaje4.png")
     quietoDer = pygame.image.load(f"assets/img/sprites/personajes/{sexo}3/personaje1.png")
     rayo = pygame.transform.scale(pygame.image.load("assets/img/sprites/items/powerUps/rayo.png"), (30,40))
     reloj = pygame.transform.scale(pygame.image.load("assets/img/sprites/items/powerUps/reloj.png"), (30,40))
-    w1 = pygame.image.load("assets/img/botones/W1.png")
-    w2 = pygame.image.load("assets/img/botones/W2.png")
 
     imgs = {
         "w1": w1,
@@ -267,7 +268,8 @@ def imgs_lvl3(idioma, sexo):
         "reloj": reloj,
         "fondo": fondo,
         "quietoIzq": quietoIzq,
-        "quietoDer": quietoDer
+        "quietoDer": quietoDer,
+        "sombras": sombrasLvl3
     }
 
     if idioma == "es":
@@ -277,8 +279,8 @@ def imgs_lvl3(idioma, sexo):
         for espacio in range(1, 3): # va iterando de 1 a 2
             imgs[f"espacio{espacio}"] = pygame.image.load(f"assets/img/botones/Space{espacio}.png")
 
-    for bombilla in range(1, 5): # va iterando de 1 a 4
-        imgs[f"bombilla{bombilla}"] = pygame.image.load(f"assets/img/sprites/items/bombillas/Bombilla{bombilla}.png")
+    for bombilla in range(0, 3): # va iterando de 1 a 4
+        imgs[f"bombilla{bombilla}"] = pygame.image.load(f"assets/img/sprites/items/bombillas/Bombilla{bombilla + 1}.png")
 
     for derecha in range(1, 4): # va iterando de 1 a 3
         imgs[f"caminandoDer{derecha}"] = pygame.image.load(f"assets/img/sprites/personajes/{sexo}3/personaje{derecha}.png")
@@ -286,8 +288,10 @@ def imgs_lvl3(idioma, sexo):
     for izquierda in range(4, 7): # va iterando de 4 a 6
         imgs[f"caminandoIzq{izquierda - 3}"] = pygame.image.load(f"assets/img/sprites/personajes/{sexo}3/personaje{izquierda}.png")
 
-    return imgs
+    for sombra in range(1, 8):
+        imgs[f"sombra{sombra}"] = pygame.image.load(f"assets/img/lvl3/sombra{sombra}.png")
 
+    return imgs
 
 def imgs_carga(personaje):
     
@@ -374,3 +378,13 @@ def imgs_cambiarAvatar():
 
     return imgs
 
+def imgs_optionsLvls():
+    Caja = pygame.transform.scale(pygame.image.load("assets/img/rect.png"), (550, 100))
+    oscuro = pygame.image.load("assets/img/oscuro.png")
+
+    imgs = {
+        "caja": Caja,
+        "oscuro": oscuro
+    }
+
+    return imgs
