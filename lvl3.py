@@ -62,6 +62,7 @@ class Foco:
     def cerrarPuerta(self):
         """Cierra la puerta."""
         self.estadoPuerta = 1
+        pygame.mixer.Sound("assets/sounds/cerrarPuerta2.wav").play()
 
     def apagar(self):
         """Apaga el foco."""
@@ -75,6 +76,7 @@ class Foco:
         if self.tiempo_encendido > 60:
             self.estado = 4
             self.ultimo_estado = 4
+            pygame.mixer.Sound("assets/sounds/romper.wav").play() # Sonido de fundir foco
             focosFundidos += 1
             focosEncendidos -= 1
         elif self.tiempo_encendido > 30:
