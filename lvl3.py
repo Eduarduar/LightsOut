@@ -7,6 +7,7 @@ from intro import intro
 
 idioma = cargar_idioma()
 reloj = pygame.time.Clock()
+accion = False
 
 PISOS = {
     1: 615,
@@ -397,13 +398,13 @@ class Personaje():
         self.PX = 876
         self.PY = PISOS[1]
         self.piso = 1
-        self.velocidad = 10
+        self.velocidad = 15
         self.orientacion = 0 # 0 = izquierda, 1 = derecha
         self.estado = 0 # 0 = quieto, 1 = caminando
         self.fotograma = 1
         self.ancho = 50
 
-    def mover(self, key, focos, cambio):
+    def mover(self, key, focos):
         """
         Mueve al personaje en la dirección especificada.
 
@@ -411,6 +412,7 @@ class Personaje():
         - key (pygame.key.get_pressed()): tecla presionada por el usuario.
         - focos (Foco): diccionario que contiene los focos del juego.
         """
+        global accion
 
         if key[pygame.K_a] and self.PX > 100 and self.PX - self.velocidad > 100:
             self.PX -= self.velocidad
@@ -420,7 +422,7 @@ class Personaje():
             self.PX += self.velocidad
             self.orientacion = 1
             self.estado = 1
-        elif key[pygame.K_w] and cambio == True:
+        elif key[pygame.K_w] and accion == True:
             if self.piso == 1 and ((self.PX >= 205 and self.PX <= 252) or (self.ancho + self.PX >= 205 and self.PX + self.ancho <= 252)):
                 self.PY = PISOS[2]
                 self.piso = 2
@@ -434,6 +436,7 @@ class Personaje():
             elif self.piso == 3 and ((self.PX >= 141 and self.PX <= 188) or (self.ancho + self.PX >= 141 and self.PX + self.ancho <= 188)):
                 self.PY = PISOS[2]
                 self.piso = 2
+            accion = False
         elif key[pygame.K_SPACE]:
             for foco in focos.values():
                 if foco.estado != 0 and foco.estado != 4 and self.piso == foco.piso:
@@ -485,6 +488,8 @@ def pantalla_lvl3(SCREEN , configJuego, LvlsInfo, elementosFondo):
         pygame.mixer.music.set_volume(configJuego["Volumen"]) #le bajamos el volumen a la musica
         pygame.mixer.music.play(-1) #reproducimos la musica en bucle
 
+        global accion
+
         # improtamos imagenes
         imgs = imgs_lvl3(configJuego["Idioma"], configJuego["personaje"])
 
@@ -533,14 +538,15 @@ def pantalla_lvl3(SCREEN , configJuego, LvlsInfo, elementosFondo):
         btnPausa.changeColor(pygame.mouse.get_pos())
         btnPausa.update(SCREEN)
 
-        cambio = Contador.comprobarTiempo()
-        if cambio: 
+        if  Contador.comprobarTiempo(): 
             Contador.bajarTiempo()
             BarraConsumo.aumentarConsumo(focos)
+            if accion == False:
+                accion = True
 
         Contador.pintar(SCREEN, configJuego["Idioma"])
 
-        Jugador.mover(evento, focos, cambio)
+        Jugador.mover(evento, focos)
         Jugador.pintar(SCREEN, imgs)
 
         # imprimimos los focos
