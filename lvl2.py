@@ -471,7 +471,117 @@ def pintarFocos(SCREEN, segundero):
             SCREEN.blit(imgs[f"bombilla{foco[1]['estado']}"], foco[1]["posicion"])
         else:
             SCREEN.blit(imgs[f"sombras"][f"sombra{foco[1]['numero']}"], (0, 0))
+def perder(SCREEN, configJuego, LvlsInfo, elementosFondo):
+    global focos
+    pygame.mixer.Sound("assets/sounds/perder.ogg").play() # reproducimos el sonido en bucle
+    configJuego["Volumen"] /= 4 # bajamos el volumen de la musica
+    pygame.mixer.music.set_volume(configJuego["Volumen"])
+    pausa = True
+    moverPersonaje(SCREEN)
+    for foco in focos["focosEstado"].items(): # recorremos los focos
+            SCREEN.blit(imgs["bombilla0"], foco[1]["posicion"]) # colocamos el foco en pantalla
+            SCREEN.blit(imgs[f"sombras"][f"sombra{foco[1]['numero']}"], (0, 0))
+    pygame.display.flip()
+    time.sleep(2)
+    pygame.image.save(SCREEN, "assets/img/pantalla.png")
+    ultimoFrame = pygame.image.load("assets/img/pantalla.png")
+    while True:
+        SCREEN.blit(ultimoFrame, (0,0))
+        SCREEN.blit(imgs["oscuro"], (0,0))
 
+        TITULO_TEXT = get_font(100).render(idioma[configJuego["Idioma"]]["Juego"]["Perdiste"], True, "#a1040f")
+        TITULO_RECT = TITULO_TEXT.get_rect(center=(640, 200))
+        SCREEN.blit(TITULO_TEXT, TITULO_RECT)
+
+        Text_text = get_font(20).render(idioma[configJuego["Idioma"]]["Juego"]["Preciona"], True, "#ffffff")
+        Text_rect = Text_text.get_rect(center=(640, 500))
+        SCREEN.blit(Text_text, Text_rect)
+
+        perder_text = get_font(27).render(idioma[configJuego["Idioma"]]["perder"]["t1"], True, "#FFA500")
+        perder_rect = perder_text.get_rect(center=(640, 400))
+        SCREEN.blit(perder_text, perder_rect)
+
+        pygame.display.flip()
+        if pausa == True:
+            time.sleep(1)
+            pygame.event.clear(pygame.KEYDOWN)
+            pausa = False
+        
+        for event in pygame.event.get():
+            # si preciona cualquier tecla retorna al menu principal
+            if event.type == pygame.KEYDOWN:
+                # subimos el volumen de la musica
+                configJuego["Volumen"] *= 4
+                pygame.mixer.music.set_volume(configJuego["Volumen"])
+                pygame.mixer.Sound("assets/sounds/viento.wav").stop()
+                return SCREEN , configJuego, LvlsInfo, elementosFondo
+            if event.type == pygame.QUIT:
+                intro(SCREEN, accion = "cerrar")
+                pygame.quit()
+                sys.exit()
+
+def ganar(SCREEN, configJuego, LvlsInfo, elementosFondo):
+    global focos
+    # calvulamos el score
+
+    score = (focos["focosApagados"] * 50) - (focos["focosFundidos"] * 100)
+
+    # mostramos una pantalla de ganaste o un mensaje de ganaste
+    pygame.image.save(SCREEN, "assets/img/pantalla.png")
+    ultimoFrame = pygame.image.load("assets/img/pantalla.png")
+    pygame.mixer.Sound("assets/sounds/ganar.wav").play()
+    # bajamos el volumen de la musica
+    configJuego["Volumen"] /= 4
+    pygame.mixer.music.set_volume(configJuego["Volumen"])
+    pausa  = True
+
+    while True:
+        SCREEN.blit(ultimoFrame, (0,0))
+        SCREEN.blit(imgs["oscuro"], (0,0))
+
+        TITULO_TEXT = get_font(100).render(idioma[configJuego["Idioma"]]["Juego"]["Ganaste"], True, "#70f4c1")
+        TITULO_RECT = TITULO_TEXT.get_rect(center=(640, 200))
+        SCREEN.blit(TITULO_TEXT, TITULO_RECT)
+
+        Text_text = get_font(20).render(idioma[configJuego["Idioma"]]["Juego"]["Preciona"], True, "#ffffff")
+        Text_rect = Text_text.get_rect(center=(640, 600))
+        SCREEN.blit(Text_text, Text_rect)
+
+        ganar_text = get_font(27).render(idioma[configJuego["Idioma"]]["ganar"]["t1"], True, "#FFA500")
+        ganar_rect = ganar_text.get_rect(center=(640, 400))
+        SCREEN.blit(ganar_text, ganar_rect)
+
+        score_text = get_font(27).render(idioma[configJuego["Idioma"]]["ganar"]["t2"] + f" {score}", True, "#FFA500")
+        score_rect = score_text.get_rect(center=(640, 450))
+        SCREEN.blit(score_text, score_rect)
+
+        apagadas_text = get_font(27).render(idioma[configJuego["Idioma"]]["ganar"]["t3"] + f' {focos["focosApagados"]}', True, "#FFA500")
+        apagadas_rect = apagadas_text.get_rect(center=(640, 500))
+        SCREEN.blit(apagadas_text, apagadas_rect)
+
+        fundidas_text = get_font(27).render(idioma[configJuego["Idioma"]]["ganar"]["t4"] + f' {focos["focosFundidos"]}', True, "#FFA500")
+        fundidas_rect = fundidas_text.get_rect(center=(640, 550))
+        SCREEN.blit(fundidas_text, fundidas_rect)
+
+        pygame.display.flip() 
+        if pausa == True:
+            time.sleep(5)
+            pygame.event.clear(pygame.KEYDOWN)
+            pausa = False
+        
+        for event in pygame.event.get():
+            # si preciona cualquier tecla retorna al menu principal
+            if event.type == pygame.KEYDOWN:
+                LvlsInfo["LvlCompletados"]["lvl1"] = True
+                LvlsInfo["LvlDisponibles"]["lvl2"] = True
+                # subimos el volumen de la musica
+                configJuego["Volumen"] *= 4
+                pygame.mixer.music.set_volume(configJuego["Volumen"])
+                return SCREEN , configJuego, LvlsInfo, elementosFondo
+            if event.type == pygame.QUIT:
+                intro(SCREEN, accion = "cerrar")
+                pygame.quit()
+                sys.exit()
 def pantalla_lvl2(SCREEN , configJuego, LvlsInfo, elementosFondo):
     """
     Función encargada de mostrar la pantalla del nivel 2 del juego LightsOut.
@@ -555,3 +665,12 @@ def pantalla_lvl2(SCREEN , configJuego, LvlsInfo, elementosFondo):
 
         # Actualizamos la pantalla
         pygame.display.flip()
+
+        if relojF <= 0 and focos["focosFundidos"] < 5: # verificamos si el jugador gano
+            SCREEN , configJuego, LvlsInfo, elementosFondo = ganar(SCREEN, configJuego, LvlsInfo, elementosFondo)
+            return SCREEN , configJuego, LvlsInfo, elementosFondo
+        
+        if consumoTotal >= LimiteConsumo or(relojF > 0 and focos["focosFundidos"] == 5): # verificamos si el jugador perdio
+            SCREEN , configJuego, LvlsInfo, elementosFondo = perder(SCREEN, configJuego, LvlsInfo, elementosFondo)
+            return SCREEN , configJuego, LvlsInfo, elementosFondo
+        
