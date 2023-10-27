@@ -252,13 +252,14 @@ def imgs_lvl2(idioma):
     return imgs
 
 def imgs_lvl3(idioma, sexo):
-    fondo = pygame.image.load("assets/img/lvl3/fondo.png")
+    w1 = pygame.image.load("assets/img/botones/W1.png")
+    w2 = pygame.image.load("assets/img/botones/W2.png")
+    fondo = pygame.image.load("assets/img/lvl3/fondo_lvl3.png")
+    sombrasLvl3 = pygame.image.load("assets/img/lvl3/sombra_lvl3.png")
     quietoIzq = pygame.image.load(f"assets/img/sprites/personajes/{sexo}3/personaje4.png")
     quietoDer = pygame.image.load(f"assets/img/sprites/personajes/{sexo}3/personaje1.png")
     rayo = pygame.transform.scale(pygame.image.load("assets/img/sprites/items/powerUps/rayo.png"), (30,40))
     reloj = pygame.transform.scale(pygame.image.load("assets/img/sprites/items/powerUps/reloj.png"), (30,40))
-    w1 = pygame.image.load("assets/img/botones/W1.png")
-    w2 = pygame.image.load("assets/img/botones/W2.png")
 
     imgs = {
         "w1": w1,
@@ -267,7 +268,8 @@ def imgs_lvl3(idioma, sexo):
         "reloj": reloj,
         "fondo": fondo,
         "quietoIzq": quietoIzq,
-        "quietoDer": quietoDer
+        "quietoDer": quietoDer,
+        "sombrasLvl3": sombrasLvl3
     }
 
     if idioma == "es":
@@ -285,6 +287,9 @@ def imgs_lvl3(idioma, sexo):
 
     for izquierda in range(4, 7): # va iterando de 4 a 6
         imgs[f"caminandoIzq{izquierda - 3}"] = pygame.image.load(f"assets/img/sprites/personajes/{sexo}3/personaje{izquierda}.png")
+
+    for sombra in range(1, 8):
+        imgs[f"sombra{sombra}"] = pygame.image.load(f"assets/img/lvl3/sombra{sombra}.png")
 
     return imgs
 
