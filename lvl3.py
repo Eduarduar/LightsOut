@@ -2,11 +2,17 @@ import sys, pygame, random, time
 from assets.defaults.button import Button
 from assets.defaults.get_fonts import get_font
 from assets.defaults.idioma import cargar_idioma
-from assets.defaults.get_imgs import imgs_lvl2
+from assets.defaults.get_imgs import imgs_lvl3
 from intro import intro
 
 idioma = cargar_idioma()
 reloj = pygame.time.Clock()
+
+PISOS = {
+    1: 615,
+    2: 437,
+    3: 248
+}
 
 # Inicializamos las variables
 
@@ -39,7 +45,7 @@ class Foco:
         Aumenta el tiempo que el foco ha estado encendido y cambia su estado según el tiempo.
     cambiarEstadoPuerta(estado)
         Cambia el estado de la puerta a abierto o cerrado.
-    pintarFoco(SCREEN, imgs)
+    pintar(SCREEN, imgs)
         Dibuja el foco en la pantalla según su estado.
     reiniciar()
         Reinicia el foco a su estado inicial.
@@ -107,7 +113,7 @@ class Foco:
         """
         self.estadoPuerta = estado
 
-    def pintarFoco(self, SCREEN, imgs):
+    def pintar(self, SCREEN, imgs):
         """
         Dibuja el foco en la pantalla según su estado.
 
@@ -118,10 +124,10 @@ class Foco:
         imgs : dict
             Diccionario con las imágenes de los focos y las sombras.
         """
-        if self.estado == 0 and self.estado == 4:
-            SCREEN.blit(imgs["sombras"][f"sombra{self.estado}"], (0, 0))
+        if self.estado == 0 or self.estado == 4:
+            SCREEN.blit(imgs[f"sombra{self.numero}"], (0, 0))
         else:
-            SCREEN.blit(imgs["focos"][f"bombilla{self.estado}"], self.posicion)
+            SCREEN.blit(imgs[f"bombilla{self.estado}"], self.posicion)
 
     def reiniciar(self):
         """Reinicia el foco a su estado inicial."""
@@ -191,6 +197,18 @@ class PowerUp():
             self.reiniciar()
         else:
             self.tiempo -= 1
+
+    def pintar(self, SCREEN, imgs):
+        """
+        Dibuja el power-up en la pantalla.
+
+        Parámetros:
+        - SCREEN (pygame.Surface): la superficie de la pantalla.
+        - imgs (dict): el diccionario de imágenes del power-up.
+        """
+        global PISOS
+        if self.suelto:
+            SCREEN.blit(imgs[self.nombre], (self.PX, PISOS[self.piso] - self.alto ))
 
     def reiniciar(self):
         """
@@ -362,31 +380,67 @@ class Personaje():
         """
         Inicializa los atributos del personaje.
         """
-        self.PX = 0
-        self.PY = 0
+        global PISOS
+        self.PX = 876
+        self.PY = PISOS[1]
         self.piso = 1
         self.velocidad = 10
         self.orientacion = 0 # 0 = izquierda, 1 = derecha
         self.estado = 0 # 0 = quieto, 1 = caminando
-        self.fotograma = 0
+        self.fotograma = 1
+        self.ancho = 50
 
-    def mover(self, direccion):
+    def mover(self, key, focos):
         """
         Mueve al personaje en la dirección especificada.
 
         Args:
-        - direccion (str): dirección hacia la que se moverá el personaje (0 = izquierda, 1 = derecha, 2 = quieto).
+        - key (pygame.key.get_pressed()): tecla presionada por el usuario.
+        - focos (Foco): diccionario que contiene los focos del juego.
         """
-        if direccion == "0":
+
+        if key[pygame.K_a] and self.PX > 100 and self.PX - self.velocidad > 100:
             self.PX -= self.velocidad
             self.orientacion = 0
             self.estado = 1
-        elif direccion == "1":
+        elif key[pygame.K_d] and self.PX < 1050 and self.PX + self.velocidad < 1050:
             self.PX += self.velocidad
             self.orientacion = 1
             self.estado = 1
-        elif direccion == "2":
+        elif key[pygame.K_w] :
+            if self.piso == 1 and ((self.PX >= 205 and self.PX <= 252) or (self.ancho + self.PX >= 205 and self.PX + self.ancho <= 252)):
+                self.PY = PISOS[2]
+                self.piso = 2
+            elif self.piso == 2:
+                if (self.PX + (self.ancho / 2) >= 205 and self.PX + (self.ancho / 2) <= 252) or (self.PX + self.ancho >= 205 and self.PX + self.ancho <= 252):
+                    self.PY = PISOS[1]
+                    self.piso = 1
+                if (self.PX + self.ancho >= 141 and self.PX + self.ancho <= 188) or (self.PX + (self.ancho / 2) >= 141 and self.PX + (self.ancho / 2) <= 188):
+                    self.PY = PISOS[3]
+                    self.piso = 3
+            elif self.piso == 3 and ((self.PX >= 141 and self.PX <= 188) or (self.ancho + self.PX >= 141 and self.PX + self.ancho <= 188)):
+                self.PY = PISOS[2]
+                self.piso = 2
+        elif key[pygame.K_SPACE]:
+            for foco in focos.values():
+                if foco.estado != 0 and foco.estado != 4 and self.piso == foco.piso:
+                    if self.PX >= foco.apagador1 - self.ancho and self.PX <= foco.apagador2 + self.ancho:
+                        foco.apagar()
+        else:
             self.estado = 0
+            self.fotograma = 1
+
+
+        # if direccion == "0":
+        #     self.PX -= self.velocidad
+        #     self.orientacion = 0
+        #     self.estado = 1
+        # elif direccion == "1":
+        #     self.PX += self.velocidad
+        #     self.orientacion = 1
+        #     self.estado = 1
+        # elif direccion == "2":
+        #     self.estado = 0
 
     def pintar(self, SCREEN, imgs):
         """
@@ -398,9 +452,9 @@ class Personaje():
         """
         if self.estado == 0:
             if self.orientacion == 0:
-                SCREEN.blit(imgs["quietoIzq"][0], (self.PX, self.PY))
+                SCREEN.blit(imgs["quietoIzq"], (self.PX, self.PY))
             else:
-                SCREEN.blit(imgs["quietoDer"][0], (self.PX, self.PY))
+                SCREEN.blit(imgs["quietoDer"], (self.PX, self.PY))
         else:
             if self.orientacion == 0:
                 SCREEN.blit(imgs[f"caminandoIzq{self.fotograma}"], (self.PX, self.PY))
@@ -408,7 +462,7 @@ class Personaje():
                 SCREEN.blit(imgs[f"caminandoDer{self.fotograma}"], (self.PX, self.PY))
             self.fotograma += 1
             if self.fotograma > 3:
-                self.fotograma = 0
+                self.fotograma = 1
 
 def pantalla_lvl3(SCREEN , configJuego, LvlsInfo, elementosFondo):
     if configJuego["indiceMusic"] != 2:
@@ -417,9 +471,12 @@ def pantalla_lvl3(SCREEN , configJuego, LvlsInfo, elementosFondo):
         pygame.mixer.music.set_volume(configJuego["Volumen"]) #le bajamos el volumen a la musica
         pygame.mixer.music.play(-1) #reproducimos la musica en bucle
 
+        # improtamos imagenes
+        imgs = imgs_lvl3(configJuego["Idioma"], configJuego["personaje"])
+
         # creamos los objetos
         
-        btnPausa = Button(image1=None, pos=(1047,57), text_imput="||", font=get_font(30), text_color="White", hoverring_color="#555f68")
+        btnPausa = Button(image1=None, pos=(1047,57), text_input="||", font=get_font(30), base_color="White", hovering_color="#555f68")
 
         Jugador = Personaje()
 
@@ -445,7 +502,28 @@ def pantalla_lvl3(SCREEN , configJuego, LvlsInfo, elementosFondo):
         }
 
     while True:
-        # imprimos el fondo
-        SCREEN.blit(elementosFondo["fondo"], (0, 0))
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                intro(SCREEN, accion = "cerrar")
+                pygame.quit()
+                sys.exit()
 
-        
+        reloj.tick(10)
+
+        # imprimos el fondo
+        SCREEN.blit(imgs["fondo"], (0, 0))
+
+        Jugador.mover(pygame.key.get_pressed(), focos)
+        Jugador.pintar(SCREEN, imgs)
+
+        # imprimimos los focos
+        for foco in focos.values():
+            foco.pintar(SCREEN, imgs)
+
+        # imprimimos los power-ups
+        for powerUp in powerUps.values():
+            powerUp.pintar(SCREEN, imgs)
+
+        SCREEN.blit(imgs["sombras"], (0, 0))
+
+        pygame.display.flip()
