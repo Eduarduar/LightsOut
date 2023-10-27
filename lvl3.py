@@ -397,9 +397,9 @@ class Personaje():
         """
         if self.estado == 0:
             if self.orientacion == 0:
-                SCREEN.blit(imgs["quieroIzq"][0], (self.PX, self.PY))
+                SCREEN.blit(imgs["quietoIzq"][0], (self.PX, self.PY))
             else:
-                SCREEN.blit(imgs["quieroDer"][0], (self.PX, self.PY))
+                SCREEN.blit(imgs["quietoDer"][0], (self.PX, self.PY))
         else:
             if self.orientacion == 0:
                 SCREEN.blit(imgs[f"caminandoIzq{self.fotograma}"], (self.PX, self.PY))
@@ -417,5 +417,7 @@ def pantalla_lvl3(SCREEN , configJuego, LvlsInfo, elementosFondo):
         pygame.mixer.music.play(-1) #reproducimos la musica en bucle
 
     while True:
-        # Tu código de la pantalla del nivel 1 aquí
-        print("Pantalla del nivel 1")
+        # imprimos el fondo
+        SCREEN.blit(elementosFondo["fondo"], (0, 0))
+
+        
