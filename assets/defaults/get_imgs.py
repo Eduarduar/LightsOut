@@ -269,7 +269,7 @@ def imgs_lvl3(idioma, sexo):
         "fondo": fondo,
         "quietoIzq": quietoIzq,
         "quietoDer": quietoDer,
-        "sombrasLvl3": sombrasLvl3
+        "sombras": sombrasLvl3
     }
 
     if idioma == "es":
