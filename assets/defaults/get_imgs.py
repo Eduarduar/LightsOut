@@ -293,7 +293,6 @@ def imgs_lvl3(idioma, sexo):
 
     return imgs
 
-
 def imgs_carga(personaje):
     
     img1 = pygame.image.load(f"assets/img/sprites/personajes/{personaje}/personaje1.png")
@@ -379,3 +378,13 @@ def imgs_cambiarAvatar():
 
     return imgs
 
+def imgs_optionsLvls():
+    Caja = pygame.transform.scale(pygame.image.load("assets/img/rect.png"), (550, 100))
+    oscuro = pygame.image.load("assets/img/oscuro.png")
+
+    imgs = {
+        "caja": Caja,
+        "oscuro": oscuro
+    }
+
+    return imgs
