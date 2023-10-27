@@ -279,8 +279,8 @@ def imgs_lvl3(idioma, sexo):
         for espacio in range(1, 3): # va iterando de 1 a 2
             imgs[f"espacio{espacio}"] = pygame.image.load(f"assets/img/botones/Space{espacio}.png")
 
-    for bombilla in range(1, 5): # va iterando de 1 a 4
-        imgs[f"bombilla{bombilla}"] = pygame.image.load(f"assets/img/sprites/items/bombillas/Bombilla{bombilla}.png")
+    for bombilla in range(0, 3): # va iterando de 1 a 4
+        imgs[f"bombilla{bombilla}"] = pygame.image.load(f"assets/img/sprites/items/bombillas/Bombilla{bombilla + 1}.png")
 
     for derecha in range(1, 4): # va iterando de 1 a 3
         imgs[f"caminandoDer{derecha}"] = pygame.image.load(f"assets/img/sprites/personajes/{sexo}3/personaje{derecha}.png")
