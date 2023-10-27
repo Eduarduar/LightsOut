@@ -45,7 +45,7 @@ class Foco:
         Reinicia el foco a su estado inicial.
     """
 
-    def __init__(self, numero, tiempo_encendido, posicion, apagador, posicion_puerta, piso):
+    def __init__(self, numero, posicion, apagador1, posicion_puerta, piso):
         """
         Inicializa un objeto Foco con los atributos especificados.
 
@@ -67,9 +67,10 @@ class Foco:
         self.numero = numero
         self.estado = 0 # 0 = apagado, 1 = encendido, 2 = amarillo, 3 = rojo, 4 = fundido
         self.ultimo_estado = 1
-        self.tiempo_encendido = tiempo_encendido
+        self.tiempo_encendido = 0
         self.posicion = posicion
-        self.apagador = apagador
+        self.apagador1 = apagador1
+        self.apagador2 = apagador1 + 7
         self.estadoPuerta = 1
         self.posicion_puerta = posicion_puerta
         self.piso = piso
@@ -415,6 +416,33 @@ def pantalla_lvl3(SCREEN , configJuego, LvlsInfo, elementosFondo):
         pygame.mixer.music.load(f"assets/songs/musica{configJuego['indiceMusic']}.wav") #cargamos la musica
         pygame.mixer.music.set_volume(configJuego["Volumen"]) #le bajamos el volumen a la musica
         pygame.mixer.music.play(-1) #reproducimos la musica en bucle
+
+        # creamos los objetos
+        
+        btnPausa = Button(image1=None, pos=(1047,57), text_imput="||", font=get_font(30), text_color="White", hoverring_color="#555f68")
+
+        Jugador = Personaje()
+
+        Contador = Temporizador()
+
+        BarraConsumo = Barra(700)
+
+        # creamos los focos
+        focos = {
+            "foco1": Foco(1, (462, 181), 434, (426, 231), 3),
+            "foco2": Foco(2, (764, 181), 730, (724, 234), 3),
+            "foco3": Foco(3, (332, 371), 301, (295, 419), 2),
+            "foco4": Foco(4, (604, 371), 579, (568, 419), 2),
+            "foco5": Foco(5, (907, 371), 880, (879, 423), 2),
+            "foco6": Foco(6, (489, 550), 458, (453, 598), 1),
+            "foco7": Foco(7, (823, 550), 787, (789, 601), 1)
+        }
+
+        # creamos los power-ups
+        powerUps = {
+            "powerUp1": PowerUp("rayo", 10, 50),
+            "powerUp2": PowerUp("consumo", 10, 50)
+        }
 
     while True:
         # imprimos el fondo
