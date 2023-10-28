@@ -12,7 +12,8 @@ segundoUltimoFoco = 0
 focosFundidos = 0
 focosApagados = 0
 focosEncendidos = 0
-
+teclaEstado = 1
+ultimoFoco = 0
 
 PISOS = {
     1: 615,
@@ -380,7 +381,7 @@ class Personaje():
         self.fotograma = 1
         self.ancho = 50
 
-    def mover(self, key, focos):
+    def mover(self, key, focos, SCREEN, imgs):
         """
         Mueve al personaje en la dirección especificada.
 
@@ -388,39 +389,70 @@ class Personaje():
         - key (pygame.key.get_pressed()): tecla presionada por el usuario.
         - focos (Foco): diccionario que contiene los focos del juego.
         """
-        global accion, focosApagados, focosEncendidos
+        global accion, focosApagados, focosEncendidos, teclaEstado
+        presiono = False
 
         if key[pygame.K_a] and self.PX > 100 and self.PX - self.velocidad > 100:
             self.PX -= self.velocidad
             self.orientacion = 0
             self.estado = 1
+            presiono = True
         elif key[pygame.K_d] and self.PX < 1050 and self.PX + self.velocidad < 1050:
             self.PX += self.velocidad
             self.orientacion = 1
             self.estado = 1
-        elif key[pygame.K_w] and accion == True:
-            if self.piso == 1 and ((self.PX >= 205 and self.PX <= 252) or (self.ancho + self.PX >= 205 and self.PX + self.ancho <= 252)):
+            presiono = True
+            
+        if self.piso == 1 and ((self.PX >= 205 and self.PX <= 252) or (self.ancho + self.PX >= 205 and self.PX + self.ancho <= 252)):
+            comprobarTeclaEstado()
+            SCREEN.blit(imgs[f"w{teclaEstado}"], (self.PX, self.PY - 50))
+            teclaEstado += 1
+            if key[pygame.K_w] and accion == True:
                 self.PY = PISOS[2]
                 self.piso = 2
-            elif self.piso == 2:
-                if (self.PX + (self.ancho / 2) >= 205 and self.PX + (self.ancho / 2) <= 252) or (self.PX + self.ancho >= 205 and self.PX + self.ancho <= 252):
+                accion = False
+                presiono = True
+        elif self.piso == 2:
+            if (self.PX + (self.ancho / 2) >= 205 and self.PX + (self.ancho / 2) <= 252) or (self.PX + self.ancho >= 205 and self.PX + self.ancho <= 252):
+                comprobarTeclaEstado()
+                SCREEN.blit(imgs[f"w{teclaEstado}"], (self.PX, self.PY - 50))
+                teclaEstado += 1
+                if key[pygame.K_w] and accion == True:
                     self.PY = PISOS[1]
                     self.piso = 1
-                if (self.PX + self.ancho >= 141 and self.PX + self.ancho <= 188) or (self.PX + (self.ancho / 2) >= 141 and self.PX + (self.ancho / 2) <= 188):
+                    accion = False
+                    presiono = True
+            if (self.PX + self.ancho >= 141 and self.PX + self.ancho <= 188) or (self.PX + (self.ancho / 2) >= 141 and self.PX + (self.ancho / 2) <= 188):
+                comprobarTeclaEstado()
+                SCREEN.blit(imgs[f"w{teclaEstado}"], (self.PX, self.PY - 50))
+                teclaEstado += 1
+                if key[pygame.K_w] and accion == True:
                     self.PY = PISOS[3]
                     self.piso = 3
-            elif self.piso == 3 and ((self.PX >= 141 and self.PX <= 188) or (self.ancho + self.PX >= 141 and self.PX + self.ancho <= 188)):
+                    accion = False
+                    presiono = True
+        elif self.piso == 3 and ((self.PX >= 141 and self.PX <= 188) or (self.ancho + self.PX >= 141 and self.PX + self.ancho <= 188)):
+            comprobarTeclaEstado()
+            SCREEN.blit(imgs[f"w{teclaEstado}"], (self.PX, self.PY - 50))
+            teclaEstado += 1
+            if key[pygame.K_w] and accion == True:
                 self.PY = PISOS[2]
                 self.piso = 2
-            accion = False
-        elif key[pygame.K_SPACE]:
-            for foco in focos.values():
-                if foco.estado != 0 and foco.estado != 4 and self.piso == foco.piso:
-                    if self.PX >= foco.apagador1 - self.ancho and self.PX <= foco.apagador2 + self.ancho:
+                presiono = True
+                accion = False
+
+        for foco in focos.values():
+            if foco.estado != 0 and foco.estado != 4 and self.piso == foco.piso:
+                if self.PX >= foco.apagador1 - self.ancho and self.PX <= foco.apagador2 + self.ancho:
+                    comprobarTeclaEstado()
+                    SCREEN.blit(imgs[f"espacio{teclaEstado}"], (self.PX - 20, self.PY + 80))
+                    teclaEstado += 1
+                    if key[pygame.K_SPACE]:
                         foco.apagar()
                         focosApagados += 1
                         focosEncendidos -= 1
-        else:
+                        
+        if presiono != True:
             self.estado = 0
             self.fotograma = 1
 
@@ -446,6 +478,11 @@ class Personaje():
             if self.fotograma > 3:
                 self.fotograma = 1
 
+def comprobarTeclaEstado():
+    global teclaEstado
+    if teclaEstado > 2:
+        teclaEstado = 1
+
 def prenderFocoAzar(focos, Contador):
     """
     Función que prende o apaga un foco al azar.
@@ -457,15 +494,22 @@ def prenderFocoAzar(focos, Contador):
     Returns:
     - None
     """
-    global segundoUltimoFoco, focosFundidos, focosEncendidos
+    global segundoUltimoFoco, focosFundidos, focosEncendidos, ultimoFoco
     if segundoUltimoFoco + 4 <= Contador.tiempoPasado and focosEncendidos != 7 - focosFundidos:
         segundoUltimoFoco = Contador.tiempoPasado
         while True:
             numFoco = random.randint(1, 7)
             if focos[f"foco{numFoco}"].estado == 0:
-                focos[f"foco{numFoco}"].prender()
-                focosEncendidos += 1
-                break
+                if focosEncendidos != 6 - focosFundidos and numFoco != ultimoFoco:
+                    focos[f"foco{numFoco}"].prender()
+                    focosEncendidos += 1
+                    ultimoFoco = numFoco
+                    break
+                if focosEncendidos == 6 - focosFundidos:
+                    focos[f"foco{numFoco}"].prender()
+                    focosEncendidos += 1
+                    ultimoFoco = numFoco
+                    break
         pygame.mixer.Sound("assets/sounds/abrirPuerta.wav").play() # Sonido de abrir puerta
         pygame.mixer.Sound("assets/sounds/prenderFoco.wav").play() # Sonido de encender foco
 
@@ -554,7 +598,7 @@ def pantalla_lvl3(SCREEN , configJuego, LvlsInfo, elementosFondo):
 
         Contador.pintar(SCREEN, configJuego["Idioma"])
 
-        Jugador.mover(evento, focos)
+        Jugador.mover(evento, focos, SCREEN, imgs)
         Jugador.pintar(SCREEN, imgs)
 
         prenderFocoAzar(focos, Contador)
