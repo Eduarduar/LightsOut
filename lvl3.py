@@ -263,6 +263,7 @@ class Barra():
             if foco.estado == 1:
                 consumo += 1
         self.consumoTotal += consumo
+        self.cambiarColor()
 
     def obtenerPorcentaje(self):
         """
@@ -326,9 +327,21 @@ class Temporizador():
         """
         Inicializa un objeto Temporizador con un tiempo predeterminado de 2 minutos (120 segundos).
         """
+        self.tiempoActual = time.localtime().tm_sec
+        self.tiempoAnterior = 0
+        self.tiempoPasado = 0
         self.tiempo = 121
         self.minutos = 2
         self.segundos = 0
+
+    def comprobarTiempo(self):
+        cambio = False
+        if self.tiempoActual != self.tiempoAnterior:
+            self.tiempoPasado += 1
+            self.tiempoAnterior = self.tiempoActual
+            cambio = True
+        self.tiempoActual = time.localtime().tm_sec
+        return cambio
 
     def bajarTiempo(self):
         """
@@ -352,7 +365,7 @@ class Temporizador():
         Returns:
         - None
         """
-        text = get_font(30).render(f"{idioma[lenguaje]['juego']['Tiempo']}{self.minutos}:{self.segundos}", True, "White")
+        text = get_font(30).render(f"{idioma[lenguaje]['Juego']['Tiempo']}{self.minutos}:{self.segundos}", True, "White")
         rect = text.get_rect(center=(740, 50))
         SCREEN.blit(text, rect)
 
@@ -390,7 +403,7 @@ class Personaje():
         self.fotograma = 1
         self.ancho = 50
 
-    def mover(self, key, focos):
+    def mover(self, key, focos, cambio):
         """
         Mueve al personaje en la dirección especificada.
 
@@ -407,7 +420,7 @@ class Personaje():
             self.PX += self.velocidad
             self.orientacion = 1
             self.estado = 1
-        elif key[pygame.K_w] :
+        elif key[pygame.K_w] and cambio == True:
             if self.piso == 1 and ((self.PX >= 205 and self.PX <= 252) or (self.ancho + self.PX >= 205 and self.PX + self.ancho <= 252)):
                 self.PY = PISOS[2]
                 self.piso = 2
@@ -429,18 +442,6 @@ class Personaje():
         else:
             self.estado = 0
             self.fotograma = 1
-
-
-        # if direccion == "0":
-        #     self.PX -= self.velocidad
-        #     self.orientacion = 0
-        #     self.estado = 1
-        # elif direccion == "1":
-        #     self.PX += self.velocidad
-        #     self.orientacion = 1
-        #     self.estado = 1
-        # elif direccion == "2":
-        #     self.estado = 0
 
     def pintar(self, SCREEN, imgs):
         """
@@ -465,6 +466,19 @@ class Personaje():
                 self.fotograma = 1
 
 def pantalla_lvl3(SCREEN , configJuego, LvlsInfo, elementosFondo):
+    """
+    Función que muestra la pantalla del nivel 3 del juego LightsOut.
+
+    Args:
+    - SCREEN: objeto pygame.Surface que representa la pantalla del juego.
+    - configJuego: diccionario con la configuración actual del juego.
+    - LvlsInfo: diccionario con la información de los niveles del juego.
+    - elementosFondo: diccionario con los elementos de fondo del juego.
+
+    Returns:
+    - None
+    """
+    # cargamos la música si no está cargada
     if configJuego["indiceMusic"] != 2:
         configJuego["indiceMusic"] = 2
         pygame.mixer.music.load(f"assets/songs/musica{configJuego['indiceMusic']}.wav") #cargamos la musica
@@ -508,12 +522,25 @@ def pantalla_lvl3(SCREEN , configJuego, LvlsInfo, elementosFondo):
                 pygame.quit()
                 sys.exit()
 
+        evento = pygame.key.get_pressed()
+
         reloj.tick(10)
 
         # imprimos el fondo
         SCREEN.blit(imgs["fondo"], (0, 0))
 
-        Jugador.mover(pygame.key.get_pressed(), focos)
+        # imprimimos el boton de pausa
+        btnPausa.changeColor(pygame.mouse.get_pos())
+        btnPausa.update(SCREEN)
+
+        cambio = Contador.comprobarTiempo()
+        if cambio: 
+            Contador.bajarTiempo()
+            BarraConsumo.aumentarConsumo(focos)
+
+        Contador.pintar(SCREEN, configJuego["Idioma"])
+
+        Jugador.mover(evento, focos, cambio)
         Jugador.pintar(SCREEN, imgs)
 
         # imprimimos los focos
