@@ -12,7 +12,8 @@ segundoUltimoFoco = 0
 focosFundidos = 0
 focosApagados = 0
 focosEncendidos = 0
-
+teclaEstado = 1
+ultimoFoco = 0
 
 PISOS = {
     1: 615,
@@ -62,6 +63,7 @@ class Foco:
     def cerrarPuerta(self):
         """Cierra la puerta."""
         self.estadoPuerta = 1
+        pygame.mixer.Sound("assets/sounds/cerrarPuerta2.wav").play()
 
     def apagar(self):
         """Apaga el foco."""
@@ -75,6 +77,7 @@ class Foco:
         if self.tiempo_encendido > 60:
             self.estado = 4
             self.ultimo_estado = 4
+            pygame.mixer.Sound("assets/sounds/romper.wav").play() # Sonido de fundir foco
             focosFundidos += 1
             focosEncendidos -= 1
         elif self.tiempo_encendido > 30:
@@ -233,7 +236,7 @@ class Barra():
         """
         consumo = 0
         for foco in focos.values(): 
-            if foco.estado == 1:
+            if foco.estado != 0 and foco.estado != 4:
                 consumo += 1
         self.consumoTotal += consumo
         self.cambiarColor()
@@ -243,9 +246,18 @@ class Barra():
         Calcula el porcentaje de consumo actual de la barra.
 
         Retorna:
-        - float que representa el porcentaje de consumo actual de la barra.
+        - Int que representa el porcentaje de consumo actual de la barra.
         """
-        return (self.consumoTotal * 100) / self.consumoMaximo
+
+        consumo = (self.consumoTotal / self.consumoMaximo) * 100
+
+        # redondeamos el porcentaje
+        if consumo % 1 >= 0.5:
+            consumo = int(consumo) + 1
+        else:
+            consumo = int(consumo)
+
+        return consumo
     
     def cambiarColor(self):
         """
@@ -270,7 +282,11 @@ class Barra():
         Retorna:
         - None
         """
-        SCREEN.blit(imgs["barra"][f"barra{self.obtenerPorcentaje()}"], (0, 0)) 
+        consumoTotal = self.obtenerPorcentaje() * 3.6
+
+        pygame.draw.rect(SCREEN, self.color, (1147, (509 - consumoTotal), 40, consumoTotal)) # dibujamos la barra de consumo
+        print(self.obtenerPorcentaje())
+        print(consumoTotal)
 
     def reiniciar(self):
         """
@@ -378,7 +394,7 @@ class Personaje():
         self.fotograma = 1
         self.ancho = 50
 
-    def mover(self, key, focos):
+    def mover(self, key, focos, SCREEN, imgs):
         """
         Mueve al personaje en la dirección especificada.
 
@@ -386,39 +402,70 @@ class Personaje():
         - key (pygame.key.get_pressed()): tecla presionada por el usuario.
         - focos (Foco): diccionario que contiene los focos del juego.
         """
-        global accion, focosApagados, focosEncendidos
+        global accion, focosApagados, focosEncendidos, teclaEstado
+        presiono = False
 
         if key[pygame.K_a] and self.PX > 100 and self.PX - self.velocidad > 100:
             self.PX -= self.velocidad
             self.orientacion = 0
             self.estado = 1
+            presiono = True
         elif key[pygame.K_d] and self.PX < 1050 and self.PX + self.velocidad < 1050:
             self.PX += self.velocidad
             self.orientacion = 1
             self.estado = 1
-        elif key[pygame.K_w] and accion == True:
-            if self.piso == 1 and ((self.PX >= 205 and self.PX <= 252) or (self.ancho + self.PX >= 205 and self.PX + self.ancho <= 252)):
+            presiono = True
+            
+        if self.piso == 1 and ((self.PX >= 205 and self.PX <= 252) or (self.ancho + self.PX >= 205 and self.PX + self.ancho <= 252)):
+            comprobarTeclaEstado()
+            SCREEN.blit(imgs[f"w{teclaEstado}"], (self.PX, self.PY - 50))
+            teclaEstado += 1
+            if key[pygame.K_w] and accion == True:
                 self.PY = PISOS[2]
                 self.piso = 2
-            elif self.piso == 2:
-                if (self.PX + (self.ancho / 2) >= 205 and self.PX + (self.ancho / 2) <= 252) or (self.PX + self.ancho >= 205 and self.PX + self.ancho <= 252):
+                accion = False
+                presiono = True
+        elif self.piso == 2:
+            if (self.PX + (self.ancho / 2) >= 205 and self.PX + (self.ancho / 2) <= 252) or (self.PX + self.ancho >= 205 and self.PX + self.ancho <= 252):
+                comprobarTeclaEstado()
+                SCREEN.blit(imgs[f"w{teclaEstado}"], (self.PX, self.PY - 50))
+                teclaEstado += 1
+                if key[pygame.K_w] and accion == True:
                     self.PY = PISOS[1]
                     self.piso = 1
-                if (self.PX + self.ancho >= 141 and self.PX + self.ancho <= 188) or (self.PX + (self.ancho / 2) >= 141 and self.PX + (self.ancho / 2) <= 188):
+                    accion = False
+                    presiono = True
+            if (self.PX + self.ancho >= 141 and self.PX + self.ancho <= 188) or (self.PX + (self.ancho / 2) >= 141 and self.PX + (self.ancho / 2) <= 188):
+                comprobarTeclaEstado()
+                SCREEN.blit(imgs[f"w{teclaEstado}"], (self.PX, self.PY - 50))
+                teclaEstado += 1
+                if key[pygame.K_w] and accion == True:
                     self.PY = PISOS[3]
                     self.piso = 3
-            elif self.piso == 3 and ((self.PX >= 141 and self.PX <= 188) or (self.ancho + self.PX >= 141 and self.PX + self.ancho <= 188)):
+                    accion = False
+                    presiono = True
+        elif self.piso == 3 and ((self.PX >= 141 and self.PX <= 188) or (self.ancho + self.PX >= 141 and self.PX + self.ancho <= 188)):
+            comprobarTeclaEstado()
+            SCREEN.blit(imgs[f"w{teclaEstado}"], (self.PX, self.PY - 50))
+            teclaEstado += 1
+            if key[pygame.K_w] and accion == True:
                 self.PY = PISOS[2]
                 self.piso = 2
-            accion = False
-        elif key[pygame.K_SPACE]:
-            for foco in focos.values():
-                if foco.estado != 0 and foco.estado != 4 and self.piso == foco.piso:
-                    if self.PX >= foco.apagador1 - self.ancho and self.PX <= foco.apagador2 + self.ancho:
+                presiono = True
+                accion = False
+
+        for foco in focos.values():
+            if foco.estado != 0 and foco.estado != 4 and self.piso == foco.piso:
+                if self.PX >= foco.apagador1 - self.ancho and self.PX <= foco.apagador2 + self.ancho:
+                    comprobarTeclaEstado()
+                    SCREEN.blit(imgs[f"espacio{teclaEstado}"], (self.PX - 20, self.PY + 80))
+                    teclaEstado += 1
+                    if key[pygame.K_SPACE]:
                         foco.apagar()
                         focosApagados += 1
                         focosEncendidos -= 1
-        else:
+                        
+        if presiono != True:
             self.estado = 0
             self.fotograma = 1
 
@@ -444,6 +491,50 @@ class Personaje():
             if self.fotograma > 3:
                 self.fotograma = 1
 
+# funcion para mostrar una pantalla de pausa antes de iniciar
+def pausaInicio(SCREEN, configJuego,):
+    """
+    Esta función muestra una pantalla de pausa al inicio del nivel 2 del juego LightsOut.
+    La pantalla muestra instrucciones y la interfaz del juego.
+    El usuario debe presionar cualquier tecla para continuar.
+    La función recibe como parámetros la pantalla del juego (SCREEN) y la configuración del juego (configJuego).
+    La función modifica el volumen de la música del juego y lo restaura al finalizar la pausa.
+    """
+    detener = True
+    parte = 1
+    while detener:
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONDOWN:
+                parte += 1            
+                
+            if event.type == pygame.QUIT:
+                intro(SCREEN, accion = "cerrar")
+                pygame.quit()
+                sys.exit()
+
+        if parte == 1:
+            print("pausa")
+        else:
+            # Restauramos el volumen de la música del juego y salimos del ciclo while
+            configJuego["Volumen"] *= 3
+            pygame.mixer.music.set_volume(configJuego["Volumen"])
+            detener = False
+
+        # Imprimimos texto de presionar cualquier tecla para continuar
+        Text_text = get_font(20).render(idioma[configJuego["Idioma"]]["Juego"]["Preciona"], True, "#ffffff")
+        Text_rect = Text_text.get_rect(center=(640, 700))
+        SCREEN.blit(Text_text, Text_rect)
+
+        pygame.display.flip()
+        reloj.tick(10)
+
+# funcion oara reiniciar el frame del personaje
+def comprobarTeclaEstado():
+    global teclaEstado
+    if teclaEstado > 2:
+        teclaEstado = 1
+
+# función que prende un foco al azar
 def prenderFocoAzar(focos, Contador):
     """
     Función que prende o apaga un foco al azar.
@@ -455,18 +546,148 @@ def prenderFocoAzar(focos, Contador):
     Returns:
     - None
     """
-    global segundoUltimoFoco, focosFundidos, focosEncendidos
+    global segundoUltimoFoco, focosFundidos, focosEncendidos, ultimoFoco
     if segundoUltimoFoco + 4 <= Contador.tiempoPasado and focosEncendidos != 7 - focosFundidos:
         segundoUltimoFoco = Contador.tiempoPasado
         while True:
             numFoco = random.randint(1, 7)
             if focos[f"foco{numFoco}"].estado == 0:
-                focos[f"foco{numFoco}"].prender()
-                focosEncendidos += 1
-                break
+                if focosEncendidos != 6 - focosFundidos and numFoco != ultimoFoco:
+                    focos[f"foco{numFoco}"].prender()
+                    focosEncendidos += 1
+                    ultimoFoco = numFoco
+                    break
+                if focosEncendidos == 6 - focosFundidos:
+                    focos[f"foco{numFoco}"].prender()
+                    focosEncendidos += 1
+                    ultimoFoco = numFoco
+                    break
         pygame.mixer.Sound("assets/sounds/abrirPuerta.wav").play() # Sonido de abrir puerta
         pygame.mixer.Sound("assets/sounds/prenderFoco.wav").play() # Sonido de encender foco
 
+# función que muestra una pantalla de perder
+def perder(SCREEN, configJuego, focos, imgs, Jugador):
+    pygame.mixer.Sound("assets/sounds/perder.ogg").play() # reproducimos el sonido en bucle
+    configJuego["Volumen"] /= 4 # bajamos el volumen de la musica
+    pygame.mixer.music.set_volume(configJuego["Volumen"])
+    pausa = True
+    SCREEN.blit(imgs["fondo"], (0, 0))
+    Jugador.pintar(SCREEN, imgs)
+    for foco in focos.values():
+        if foco != 0 and foco != 4:
+            foco.apagar()
+        foco.pintar(SCREEN, imgs)
+    SCREEN.blit(imgs["sombras"], (0, 0))
+    pygame.display.flip()
+    time.sleep(2)
+    pygame.image.save(SCREEN, "assets/img/pantalla.png")
+    ultimoFrame = pygame.image.load("assets/img/pantalla.png")
+    while True:
+        SCREEN.blit(ultimoFrame, (0,0))
+        SCREEN.blit(imgs["oscuro"], (0,0))
+
+        TITULO_TEXT = get_font(100).render(idioma[configJuego["Idioma"]]["Juego"]["Perdiste"], True, "#a1040f")
+        TITULO_RECT = TITULO_TEXT.get_rect(center=(640, 200))
+        SCREEN.blit(TITULO_TEXT, TITULO_RECT)
+
+        Text_text = get_font(20).render(idioma[configJuego["Idioma"]]["Juego"]["Preciona"], True, "#ffffff")
+        Text_rect = Text_text.get_rect(center=(640, 500))
+        SCREEN.blit(Text_text, Text_rect)
+
+        perder_text = get_font(27).render(idioma[configJuego["Idioma"]]["perder"]["t1"], True, "#FFA500")
+        perder_rect = perder_text.get_rect(center=(640, 400))
+        SCREEN.blit(perder_text, perder_rect)
+
+        pygame.display.flip()
+        if pausa == True:
+            time.sleep(1)
+            pygame.event.clear(pygame.KEYDOWN)
+            pausa = False
+        
+        for event in pygame.event.get():
+            # si preciona cualquier tecla retorna al menu principal
+            if event.type == pygame.KEYDOWN:
+                # subimos el volumen de la musica
+                configJuego["Volumen"] *= 4
+                pygame.mixer.music.set_volume(configJuego["Volumen"])
+                pygame.mixer.Sound("assets/sounds/viento.wav").stop()
+                return SCREEN , configJuego
+            if event.type == pygame.QUIT:
+                intro(SCREEN, accion = "cerrar")
+                pygame.quit()
+                sys.exit()
+
+
+# funcion para mostrar una pantalla de ganaste
+def ganar(SCREEN, configJuego, LvlsInfo, imgs):
+    """
+    Función que muestra la pantalla de victoria del nivel 3 del juego LightsOut.
+    Calcula el puntaje del jugador y muestra la pantalla de victoria con el puntaje obtenido.
+    Además, guarda una imagen de la pantalla de victoria, reproduce un sonido y baja el volumen de la música.
+    Espera 5 segundos antes de permitir que el jugador presione una tecla para volver al menú principal.
+    Si el jugador presiona una tecla, se actualiza la información del nivel completado y disponible, se sube el volumen de la música y se retorna la información actualizada.
+    Si el jugador cierra la ventana, se cierra el juego.
+    """
+    # calvulamos el score
+    score = (focosApagados * 50) - (focosFundidos * 100)
+
+    # mostramos una pantalla de ganaste o un mensaje de ganaste
+    pygame.image.save(SCREEN, "assets/img/pantalla.png")
+    ultimoFrame = pygame.image.load("assets/img/pantalla.png")
+    pygame.mixer.Sound("assets/sounds/ganar.wav").play()
+    # bajamos el volumen de la musica
+    configJuego["Volumen"] /= 4
+    pygame.mixer.music.set_volume(configJuego["Volumen"])
+    pausa  = True
+    while True:
+        SCREEN.blit(ultimoFrame, (0,0))
+        SCREEN.blit(imgs["oscuro"], (0,0))
+
+        TITULO_TEXT = get_font(100).render(idioma[configJuego["Idioma"]]["Juego"]["Ganaste"], True, "#70f4c1")
+        TITULO_RECT = TITULO_TEXT.get_rect(center=(640, 200))
+        SCREEN.blit(TITULO_TEXT, TITULO_RECT)
+
+        Text_text = get_font(20).render(idioma[configJuego["Idioma"]]["Juego"]["Preciona"], True, "#ffffff")
+        Text_rect = Text_text.get_rect(center=(640, 600))
+        SCREEN.blit(Text_text, Text_rect)
+
+        ganar_text = get_font(27).render(idioma[configJuego["Idioma"]]["ganar"]["t1"], True, "#FFA500")
+        ganar_rect = ganar_text.get_rect(center=(640, 400))
+        SCREEN.blit(ganar_text, ganar_rect)
+
+        score_text = get_font(27).render(idioma[configJuego["Idioma"]]["ganar"]["t2"] + f" {score}", True, "#FFA500")
+        score_rect = score_text.get_rect(center=(640, 450))
+        SCREEN.blit(score_text, score_rect)
+
+        apagadas_text = get_font(27).render(idioma[configJuego["Idioma"]]["ganar"]["t3"] + f' {focosApagados}', True, "#FFA500")
+        apagadas_rect = apagadas_text.get_rect(center=(640, 500))
+        SCREEN.blit(apagadas_text, apagadas_rect)
+
+        fundidas_text = get_font(27).render(idioma[configJuego["Idioma"]]["ganar"]["t4"] + f' {focosFundidos}', True, "#FFA500")
+        fundidas_rect = fundidas_text.get_rect(center=(640, 550))
+        SCREEN.blit(fundidas_text, fundidas_rect)
+
+        pygame.display.flip()
+        
+        if pausa == True:
+            time.sleep(5)
+            pygame.event.clear(pygame.KEYDOWN)
+            pausa = False
+        
+        for event in pygame.event.get():
+            # si preciona cualquier tecla retorna al menu principal
+            if event.type == pygame.KEYDOWN:
+                LvlsInfo["LvlCompletados"]["lvl3"] = True
+                # subimos el volumen de la musica
+                configJuego["Volumen"] *= 4
+                pygame.mixer.music.set_volume(configJuego["Volumen"])
+                return SCREEN , configJuego, LvlsInfo
+            if event.type == pygame.QUIT:
+                intro(SCREEN, accion = "cerrar")
+                pygame.quit()
+                sys.exit()
+
+# función principal del nivel
 def pantalla_lvl3(SCREEN , configJuego, LvlsInfo, elementosFondo):
     """
     Función que muestra la pantalla del nivel 3 del juego LightsOut.
@@ -484,7 +705,8 @@ def pantalla_lvl3(SCREEN , configJuego, LvlsInfo, elementosFondo):
     if configJuego["indiceMusic"] != 2:
         configJuego["indiceMusic"] = 2
         pygame.mixer.music.load(f"assets/songs/musica{configJuego['indiceMusic']}.wav") #cargamos la musica
-        pygame.mixer.music.set_volume(configJuego["Volumen"]) #le bajamos el volumen a la musica
+        configJuego["Volumen"] /= 3
+        pygame.mixer.music.set_volume(configJuego["Volumen"])
         pygame.mixer.music.play(-1) #reproducimos la musica en bucle
 
         global accion
@@ -500,7 +722,7 @@ def pantalla_lvl3(SCREEN , configJuego, LvlsInfo, elementosFondo):
 
         Contador = Temporizador()
 
-        BarraConsumo = Barra(700)
+        BarraConsumo = Barra(300)
 
         # creamos los focos
         focos = {
@@ -518,7 +740,8 @@ def pantalla_lvl3(SCREEN , configJuego, LvlsInfo, elementosFondo):
             "powerUp1": PowerUp("rayo", 10, 50),
             "powerUp2": PowerUp("consumo", 10, 50)
         }
-
+    
+    i = 0
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -547,15 +770,18 @@ def pantalla_lvl3(SCREEN , configJuego, LvlsInfo, elementosFondo):
                     foco.aumentarTiempo()
                     
             BarraConsumo.aumentarConsumo(focos)
+            print("aumento consumo")
             if accion == False:
                 accion = True
 
         Contador.pintar(SCREEN, configJuego["Idioma"])
 
-        Jugador.mover(evento, focos)
+        Jugador.mover(evento, focos, SCREEN, imgs)
         Jugador.pintar(SCREEN, imgs)
 
         prenderFocoAzar(focos, Contador)
+
+        BarraConsumo.pintar(SCREEN, imgs)
 
         # imprimimos los focos
         for foco in focos.values():
@@ -565,6 +791,28 @@ def pantalla_lvl3(SCREEN , configJuego, LvlsInfo, elementosFondo):
         for powerUp in powerUps.values():
             powerUp.pintar(SCREEN, imgs)
 
+        apagadosText = get_font(25).render(f"X{focosApagados}", True, "White")
+        apagadosRect = apagadosText.get_rect(center=(1229, 667))
+        SCREEN.blit(apagadosText, apagadosRect)
+
+        fundidosText = get_font(25).render(f"X{focosFundidos}", True, "White")
+        fundidosRect = fundidosText.get_rect(center=(1229, 583))
+        SCREEN.blit(fundidosText, fundidosRect)
+
         SCREEN.blit(imgs["sombras"], (0, 0))
 
         pygame.display.flip()
+
+        if BarraConsumo.consumoTotal >= BarraConsumo.consumoMaximo or(Contador.tiempo > 0 and focosFundidos == 8): # verificamos si el jugador perdio
+            SCREEN , configJuego = perder(SCREEN, configJuego, focos, imgs, Jugador)
+            return SCREEN , configJuego, LvlsInfo, elementosFondo
+
+        if Contador.tiempo <= 120 and focosFundidos < 8: # verificamos si el jugador gano
+            SCREEN , configJuego, LvlsInfo = ganar(SCREEN, configJuego, LvlsInfo, imgs)
+            return SCREEN , configJuego, LvlsInfo, elementosFondo
+
+        if i == 0:
+            # Mostramos las instrucciones del juego
+            SCREEN.blit(imgs["oscuro"], (0,0))
+            pausaInicio(SCREEN, configJuego)
+            i += 1
