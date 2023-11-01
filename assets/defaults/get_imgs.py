@@ -262,6 +262,7 @@ def imgs_lvl3(idioma, sexo):
     reloj = pygame.transform.scale(pygame.image.load("assets/img/sprites/items/powerUps/reloj.png"), (30,40))
     puerta = pygame.image.load("assets/img/lvl3/puertaon.png")
     oscuro = pygame.image.load("assets/img/oscuro.png")
+    ventanas = pygame.image.load("assets/img/lvl3/ventanas.png")
 
     if idioma == "es":
         espacio1 = pygame.image.load("assets/img/botones/Espacio1.png")
@@ -282,7 +283,8 @@ def imgs_lvl3(idioma, sexo):
         "puertaon": puerta,
         "espacio1": espacio1,
         "espacio2": espacio2,
-        "oscuro": oscuro
+        "oscuro": oscuro,
+        "ventanas": ventanas
     }
 
     if idioma == "es":

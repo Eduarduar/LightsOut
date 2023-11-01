@@ -3,11 +3,15 @@ from assets.defaults.button import Button
 from assets.defaults.get_fonts import get_font
 from assets.defaults.idioma import cargar_idioma
 from assets.defaults.get_imgs import imgs_lvl3
+from opciones_juego import opciones_juego
+from intro import intro
+from carga import pantalla_de_carga
 from intro import intro
 
 idioma = cargar_idioma()
 reloj = pygame.time.Clock()
 accion = False
+segundoUltimoRayo = 0
 segundoUltimoFoco = 0
 focosFundidos = 0
 focosApagados = 0
@@ -54,6 +58,7 @@ class Foco:
         self.estadoPuerta = 1 # 1 = cerrado, 2 = abierto
         self.posicion_puerta = posicion_puerta
         self.piso = piso
+        self.fusible = False # indica si el foco fue apagado por que se fundio el fusible
 
     def prender(self):
         """Enciende el foco."""
@@ -107,11 +112,13 @@ class Foco:
 
     def reiniciar(self):
         """Reinicia el foco a su estado inicial."""
-        self.estado = 0
+        self.estado = 0 # 0 = apagado, 1 = encendido, 2 = amarillo, 3 = rojo, 4 = fundido
+        self.ultimo_estado = 1
         self.tiempo_encendido = 0
-        self.estadoPuerta = 1
+        self.estadoPuerta = 1 # 1 = cerrado, 2 = abierto
 
 class PowerUp():
+
     """
     Una clase que representa un power-up en un juego.
 
@@ -193,7 +200,7 @@ class PowerUp():
         self.activo = False
         self.suelto = False
         self.piso = 1
-        self.piso = 0
+        self.PX = 0
         self.tiempo = self.tiempoDefault
 
 class Barra():
@@ -285,8 +292,6 @@ class Barra():
         consumoTotal = self.obtenerPorcentaje() * 3.6
 
         pygame.draw.rect(SCREEN, self.color, (1147, (509 - consumoTotal), 40, consumoTotal)) # dibujamos la barra de consumo
-        print(self.obtenerPorcentaje())
-        print(consumoTotal)
 
     def reiniciar(self):
         """
@@ -296,6 +301,8 @@ class Barra():
         - None
         """
         self.consumoTotal = 0
+        self.consumoMaximo = 300
+        self.color = "#00FF00"
 
 class Temporizador():
     """
@@ -324,7 +331,7 @@ class Temporizador():
         self.segundos = 0
 
     def actualizarTiempo(self):
-        if self.tiempoActual != self.tiempoAnterior:
+        if self.comprobarTiempo():
             self.tiempoPasado += 1
             self.tiempoAnterior = self.tiempoActual
         self.tiempoActual = time.localtime().tm_sec
@@ -364,7 +371,12 @@ class Temporizador():
         """
         Reinicia el tiempo a cero.
         """
-        self.tiempo = 0
+        self.tiempoActual = time.localtime().tm_sec
+        self.tiempoAnterior = 0
+        self.tiempoPasado = 0
+        self.tiempo = 121
+        self.minutos = 2
+        self.segundos = 0
 
 class Personaje():
     """
@@ -394,7 +406,7 @@ class Personaje():
         self.fotograma = 1
         self.ancho = 50
 
-    def mover(self, key, focos, SCREEN, imgs):
+    def mover(self, key, focos, SCREEN, imgs, Fusibles, Contador):
         """
         Mueve al personaje en la dirección especificada.
 
@@ -410,7 +422,7 @@ class Personaje():
             self.orientacion = 0
             self.estado = 1
             presiono = True
-        elif key[pygame.K_d] and self.PX < 1050 and self.PX + self.velocidad < 1050:
+        elif key[pygame.K_d] and self.PX < 1050 and self.PX + self.velocidad < 1050 - self.ancho:
             self.PX += self.velocidad
             self.orientacion = 1
             self.estado = 1
@@ -454,6 +466,14 @@ class Personaje():
                 presiono = True
                 accion = False
 
+        elif self.piso == 1 and ((self.PX >= 981 and self.PX <= 1023) or (self.ancho + self.PX >= 981 and self.PX + self.ancho <= 1023)) and Fusibles.comprobarMomentos(Contador.tiempoPasado):
+            comprobarTeclaEstado()
+            SCREEN.blit(imgs[f"espacio{teclaEstado}"], (self.PX - self.ancho, self.PY - 50))
+            teclaEstado += 1
+            if key[pygame.K_SPACE]:
+                Fusibles.prender()
+                Fusibles.borraMomento()
+
         for foco in focos.values():
             if foco.estado != 0 and foco.estado != 4 and self.piso == foco.piso:
                 if self.PX >= foco.apagador1 - self.ancho and self.PX <= foco.apagador2 + self.ancho:
@@ -468,6 +488,20 @@ class Personaje():
         if presiono != True:
             self.estado = 0
             self.fotograma = 1
+
+    def reiniciar(self):
+        """
+        Reinicia el personaje a su estado inicial.
+        """
+        global PISOS
+        self.PX = 876
+        self.PY = PISOS[1]
+        self.piso = 1
+        self.velocidad = 15
+        self.orientacion = 0 # 0 = izquierda, 1 = derecha
+        self.estado = 0 # 0 = quieto, 1 = caminando
+        self.fotograma = 1
+        self.ancho = 50
 
     def pintar(self, SCREEN, imgs):
         """
@@ -491,8 +525,40 @@ class Personaje():
             if self.fotograma > 3:
                 self.fotograma = 1
 
+class Fusible():
+    def __init__(self):
+        self.estado = 1 # 0 = apagado, 1 = encendido
+        self.fundido = 1 # 0 = fundido, 1 = no fundido
+        self.momentos = []
+
+    def ordenarMomentos(self):# ordenamos el array de momentos del mayor al menor
+        self.momentos.sort(reverse=True)
+
+    def obtenerMomentos(self, tiempo): 
+        self.momentos.append(tiempo)
+
+    def comprobarMomentos(self, tiempo):
+        if tiempo in self.momentos:
+            self.estado = 0
+            return True
+        return False
+
+    def borraMomento(self): # eliminamos el ultimo momento del array
+        self.momentos.pop()
+
+    def apagar(self):
+        self.estado = 0
+
+    def prender(self):
+        self.estado = 1
+
+    def reiniciar(self):
+        self.estado = 1
+        self.fundido = 1
+        self.momentos = []
+
 # funcion para mostrar una pantalla de pausa antes de iniciar
-def pausaInicio(SCREEN, configJuego,):
+def pausaInicio(SCREEN, configJuego, imgs):
     """
     Esta función muestra una pantalla de pausa al inicio del nivel 2 del juego LightsOut.
     La pantalla muestra instrucciones y la interfaz del juego.
@@ -513,7 +579,20 @@ def pausaInicio(SCREEN, configJuego,):
                 sys.exit()
 
         if parte == 1:
-            print("pausa")
+            SCREEN.blit(imgs["fondo"], (0, 0))
+            for sombra in range(1, 8):
+                SCREEN.blit(imgs[f"sombra{sombra}"], (0, 0))
+
+            apagadosText = get_font(25).render(f"X{focosApagados}", True, "White")
+            apagadosRect = apagadosText.get_rect(center=(1229, 667))
+            SCREEN.blit(apagadosText, apagadosRect)
+
+            fundidosText = get_font(25).render(f"X{focosFundidos}", True, "White")
+            fundidosRect = fundidosText.get_rect(center=(1229, 583))
+            SCREEN.blit(fundidosText, fundidosRect)
+            
+            SCREEN.blit(imgs["sombras"], (0, 0))
+
         else:
             # Restauramos el volumen de la música del juego y salimos del ciclo while
             configJuego["Volumen"] *= 3
@@ -547,7 +626,11 @@ def prenderFocoAzar(focos, Contador):
     - None
     """
     global segundoUltimoFoco, focosFundidos, focosEncendidos, ultimoFoco
-    if segundoUltimoFoco + 4 <= Contador.tiempoPasado and focosEncendidos != 7 - focosFundidos:
+    
+    if focosEncendidos > 7 - focosFundidos:
+        focosEncendidos = 7 - focosFundidos
+    
+    if segundoUltimoFoco + 4 <= Contador.tiempoPasado and focosEncendidos < 7 - focosFundidos:
         segundoUltimoFoco = Contador.tiempoPasado
         while True:
             numFoco = random.randint(1, 7)
@@ -616,7 +699,6 @@ def perder(SCREEN, configJuego, focos, imgs, Jugador):
                 intro(SCREEN, accion = "cerrar")
                 pygame.quit()
                 sys.exit()
-
 
 # funcion para mostrar una pantalla de ganaste
 def ganar(SCREEN, configJuego, LvlsInfo, imgs):
@@ -709,7 +791,9 @@ def pantalla_lvl3(SCREEN , configJuego, LvlsInfo, elementosFondo):
         pygame.mixer.music.set_volume(configJuego["Volumen"])
         pygame.mixer.music.play(-1) #reproducimos la musica en bucle
 
-        global accion
+        global accion, focosEncendidos,segundoUltimoRayo, segundoUltimoFoco, focosFundidos, focosApagados, teclaEstado, ultimoFoco
+        rayo = 0
+        ray = False
 
         # improtamos imagenes
         imgs = imgs_lvl3(configJuego["Idioma"], configJuego["personaje"])
@@ -740,28 +824,125 @@ def pantalla_lvl3(SCREEN , configJuego, LvlsInfo, elementosFondo):
             "powerUp1": PowerUp("rayo", 10, 50),
             "powerUp2": PowerUp("consumo", 10, 50)
         }
+
+        Fusibles = Fusible()
+
+        # obtendremos 3 momentos al azar
+        for i in range(3):
+            Fusibles.obtenerMomentos(random.randint(10, 110))
+
+        Fusibles.ordenarMomentos()
     
     i = 0
     while True:
+        reloj.tick(10)
+        evento = pygame.key.get_pressed()
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 intro(SCREEN, accion = "cerrar")
                 pygame.quit()
                 sys.exit()
 
-        evento = pygame.key.get_pressed()
+            if event.type == pygame.KEYDOWN:
+                # comprobamos si preciono la tecla escape
+                if event.key == pygame.K_ESCAPE:
+                    SCREEN , configJuego, LvlsInfo, elementosFondo, accionM = opciones_juego(SCREEN , configJuego, LvlsInfo, elementosFondo)
+                    pygame.display.set_caption(idioma[configJuego["Idioma"]]["Nivel1"]["Titulo"])
+                    if accionM == "salir":
+                        pantalla_de_carga(SCREEN, configJuego)
+                        return SCREEN , configJuego, LvlsInfo, elementosFondo
+                    elif accionM == "reiniciar":
+                        pausaInicio(SCREEN, configJuego, imgs)
+                        for foco in focos.values():
+                            foco.reiniciar()
+                        Jugador.reiniciar()
+                        Contador.reiniciar()
+                        BarraConsumo.reiniciar()
+                        Fusibles.reiniciar()
+                        focosApagados = 0
+                        focosFundidos = 0
+                        focosEncendidos = 0
+                        teclaEstado = 1
+                        ultimoFoco = 0
+                        segundoUltimoFoco = 0
+                        segundoUltimoRayo = 0
+                        accion = False
+                        for o in range(3):
+                            Fusibles.obtenerMomentos(random.randint(10, 110))
+                        Fusibles.ordenarMomentos()
 
-        reloj.tick(10)
+                        # eventos del raton
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if btnPausa.checkForInput(event.pos):
+                    SCREEN , configJuego, LvlsInfo, elementosFondo, accionM = opciones_juego(SCREEN , configJuego, LvlsInfo, elementosFondo)
+                    pygame.display.set_caption(idioma[configJuego["Idioma"]]["Nivel1"]["Titulo"])
+                    if accionM == "salir":
+                        pantalla_de_carga(SCREEN, configJuego)
+                        return SCREEN , configJuego, LvlsInfo, elementosFondo
+                    elif accionM == "reiniciar":
+                        pausaInicio(SCREEN, configJuego, imgs)
+                        for foco in focos.values():
+                            foco.reiniciar()
+                        Jugador.reiniciar()
+                        Contador.reiniciar()
+                        BarraConsumo.reiniciar()
+                        Fusibles.reiniciar()
+                        focosApagados = 0
+                        focosFundidos = 0
+                        focosEncendidos = 0
+                        teclaEstado = 1
+                        ultimoFoco = 0
+                        segundoUltimoFoco = 0
+                        segundoUltimoRayo = 0
+                        accion = False
+                        for o in range(3):
+                            Fusibles.obtenerMomentos(random.randint(10, 110))
+                        Fusibles.ordenarMomentos()
+                        
+
+        if Fusibles.fundido == 0 and Fusibles.estado == 1: # cuando se repara
+            Fusibles.fundido = 1
+            for foco in focos.values():
+                if foco.estado == 0 and foco.fusible == True:
+                    foco.prender()
+                    foco.fusible = False
+                    focosEncendidos += 1
+        elif Fusibles.fundido == 1 and Fusibles.estado == 0: # cuando se funda
+            Fusibles.fundido = 0
+            ray = True
+            segundoUltimoRayo = Contador.tiempoPasado
+            for foco in focos.values():
+                if foco.estado != 0 and foco.estado != 4:
+                    foco.apagar()
+                    foco.fusible = True
+                    focosEncendidos -= 1
+
+        if segundoUltimoRayo + 20 <= Contador.tiempoPasado:
+            segundoUltimoRayo = Contador.tiempoPasado
+            if random.randint(1, 10) == 1:
+                ray = True
 
         # imprimos el fondo
         SCREEN.blit(imgs["fondo"], (0, 0))
+
+        if ray == True:
+            if rayo == 1:
+                pygame.mixer.Sound("assets/sounds/rayo.mp3").play()
+            if rayo < 6: # reproducimos sonido del rayo
+                SCREEN.blit(imgs["ventanas"], (0, 0))
+                rayo += 1
+            else:
+                rayo = 0
+                ray = False
 
         # imprimimos el boton de pausa
         btnPausa.changeColor(pygame.mouse.get_pos())
         btnPausa.update(SCREEN)
 
-        Contador.actualizarTiempo()
-        if  Contador.comprobarTiempo(): 
+        if Fusibles.comprobarMomentos(Contador.tiempoPasado) == False:
+            Contador.actualizarTiempo()
+        if  Contador.comprobarTiempo() and Fusibles.comprobarMomentos(Contador.tiempoPasado) == False:
             Contador.bajarTiempo()
             for foco in focos.values():
                 if foco.estadoPuerta == 2:
@@ -770,16 +951,19 @@ def pantalla_lvl3(SCREEN , configJuego, LvlsInfo, elementosFondo):
                     foco.aumentarTiempo()
                     
             BarraConsumo.aumentarConsumo(focos)
-            print("aumento consumo")
             if accion == False:
                 accion = True
 
+        if accion == False and Fusibles.comprobarMomentos(Contador.tiempoPasado) == True:
+            accion = True
+
         Contador.pintar(SCREEN, configJuego["Idioma"])
 
-        Jugador.mover(evento, focos, SCREEN, imgs)
+        Jugador.mover(evento, focos, SCREEN, imgs, Fusibles, Contador)
         Jugador.pintar(SCREEN, imgs)
 
-        prenderFocoAzar(focos, Contador)
+        if Fusibles.comprobarMomentos(Contador.tiempoPasado) == False:
+            prenderFocoAzar(focos, Contador)
 
         BarraConsumo.pintar(SCREEN, imgs)
 
@@ -807,12 +991,12 @@ def pantalla_lvl3(SCREEN , configJuego, LvlsInfo, elementosFondo):
             SCREEN , configJuego = perder(SCREEN, configJuego, focos, imgs, Jugador)
             return SCREEN , configJuego, LvlsInfo, elementosFondo
 
-        if Contador.tiempo <= 120 and focosFundidos < 8: # verificamos si el jugador gano
+        if Contador.tiempo <= 0 and focosFundidos < 8: # verificamos si el jugador gano
             SCREEN , configJuego, LvlsInfo = ganar(SCREEN, configJuego, LvlsInfo, imgs)
             return SCREEN , configJuego, LvlsInfo, elementosFondo
 
         if i == 0:
             # Mostramos las instrucciones del juego
             SCREEN.blit(imgs["oscuro"], (0,0))
-            pausaInicio(SCREEN, configJuego)
+            pausaInicio(SCREEN, configJuego, imgs)
             i += 1
