@@ -157,13 +157,14 @@ class PowerUp():
         self.tiempo = self.tiempoDefault
         self.alto = alto
 
-    def soltarP(self):
+    def soltar(self):
         """
         Libera el power-up estableciendo su posición y nivel de piso al azar.
         """
         self.PX = random.randint(200, 1000)
         self.piso = random.randint(1, 3)
         self.suelto = True
+        self.activo = False
 
     def activar(self):
         """
@@ -181,7 +182,7 @@ class PowerUp():
         else:
             self.tiempo -= 1
 
-    def pintar(self, SCREEN, imgs):
+    def pintar(self, SCREEN, imgs, Jugador, Contador, Barra):
         """
         Dibuja el power-up en la pantalla.
 
@@ -190,8 +191,20 @@ class PowerUp():
         - imgs (dict): el diccionario de imágenes del power-up.
         """
         global PISOS
+
         if self.suelto:
-            SCREEN.blit(imgs[self.nombre], (self.PX, PISOS[self.piso] - self.alto ))
+            if self.activo == False:
+                if (Jugador.PX >= self.PX - Jugador.ancho and Jugador.PX <= self.PX + 40) and (Jugador.piso == self.piso):
+                    if self.nombre == "consumo":
+                        Barra.consumoTotal -= 20
+                        self.reiniciar()
+                    elif self.nombre == "rayo":
+                        self.activar()
+                SCREEN.blit(imgs[self.nombre], (self.PX, PISOS[self.piso] + (self.alto - 10) ))
+        else:
+            if Contador.comprobarTiempo() and self.activo:
+                self.bajarTiempo()
+
 
     def reiniciar(self):
         """
@@ -406,7 +419,7 @@ class Personaje():
         self.fotograma = 1
         self.ancho = 50
 
-    def mover(self, key, focos, SCREEN, imgs, Fusibles, Contador):
+    def mover(self, key, focos, SCREEN, imgs, Fusibles, Contador, powerUps):
         """
         Mueve al personaje en la dirección especificada.
 
@@ -484,6 +497,7 @@ class Personaje():
                         foco.apagar()
                         focosApagados += 1
                         focosEncendidos -= 1
+                        soltarPowerUp(powerUps)
                         
         if presiono != True:
             self.estado = 0
@@ -556,6 +570,27 @@ class Fusible():
         self.estado = 1
         self.fundido = 1
         self.momentos = []
+
+# cuando se apague un foco habra una pequeña posibilidad de soltar un powerup
+def soltarPowerUp(powerUps):
+    """
+    Función que suelta un power-up aleatorio en el juego. 
+    El power-up puede ser de dos tipos: reducirConsumo o Velocidad.
+    Si el power-up es de tipo reducirConsumo, se activa el estado "reducirConsumo" y se reduce el consumo de energía del jugador.
+    Si el power-up es de tipo Velocidad, se activa el estado "Velocidad" y se aumenta la velocidad del jugador.
+    """
+    activo = False
+    soltarPowerUp = random.randint(1, 100)
+    if soltarPowerUp <= powerUps["probabilidad"]:
+        soltarPowerUp = random.randint(1, 100)
+        if soltarPowerUp <= 50:
+            if powerUps["powerUp1"].activo != True and powerUps["powerUp1"].suelto != True:
+                powerUps["powerUp1"].soltar()
+                activo = True
+        if soltarPowerUp > 50 or activo == False:
+            if powerUps["powerUp2"].activo != True and powerUps["powerUp2"].suelto != True:
+                powerUps["powerUp2"].soltar()
+                activo = True
 
 # funcion para mostrar una pantalla de pausa antes de iniciar
 def pausaInicio(SCREEN, configJuego, imgs):
@@ -821,6 +856,7 @@ def pantalla_lvl3(SCREEN , configJuego, LvlsInfo, elementosFondo):
 
         # creamos los power-ups
         powerUps = {
+            "probabilidad": 100,
             "powerUp1": PowerUp("rayo", 10, 50),
             "powerUp2": PowerUp("consumo", 10, 50)
         }
@@ -835,7 +871,10 @@ def pantalla_lvl3(SCREEN , configJuego, LvlsInfo, elementosFondo):
     
     i = 0
     while True:
-        reloj.tick(10)
+        if powerUps["powerUp1"].activo == True:
+            reloj.tick(18)
+        else:
+            reloj.tick(12)
         evento = pygame.key.get_pressed()
 
         for event in pygame.event.get():
@@ -959,7 +998,7 @@ def pantalla_lvl3(SCREEN , configJuego, LvlsInfo, elementosFondo):
 
         Contador.pintar(SCREEN, configJuego["Idioma"])
 
-        Jugador.mover(evento, focos, SCREEN, imgs, Fusibles, Contador)
+        Jugador.mover(evento, focos, SCREEN, imgs, Fusibles, Contador, powerUps)
         Jugador.pintar(SCREEN, imgs)
 
         if Fusibles.comprobarMomentos(Contador.tiempoPasado) == False:
@@ -973,7 +1012,9 @@ def pantalla_lvl3(SCREEN , configJuego, LvlsInfo, elementosFondo):
 
         # imprimimos los power-ups
         for powerUp in powerUps.values():
-            powerUp.pintar(SCREEN, imgs)
+            if type(powerUp) == int:
+                continue
+            powerUp.pintar(SCREEN, imgs, Jugador, Contador, BarraConsumo)
 
         apagadosText = get_font(25).render(f"X{focosApagados}", True, "White")
         apagadosRect = apagadosText.get_rect(center=(1229, 667))

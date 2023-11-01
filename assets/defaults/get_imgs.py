@@ -275,7 +275,7 @@ def imgs_lvl3(idioma, sexo):
         "w1": w1,
         "w2": w2,
         "rayo": rayo,
-        "reloj": reloj,
+        "consumo": reloj,
         "fondo": fondo,
         "quietoIzq": quietoIzq,
         "quietoDer": quietoDer,
