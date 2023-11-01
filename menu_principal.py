@@ -72,10 +72,10 @@ def menu_principal(SCREEN , configJuego, LvlsInfo, elementosFondo):
             if event.type == pygame.MOUSEBUTTONDOWN:
                 # Si el usuario hace click en un botón, realizamos la acción correspondiente
                 if PLAY_BUTTON.checkForInput(MENU_MOUSE_POS):
-                    # if configJuego["historia"]:
-                    #     pantalla_de_carga(SCREEN, configJuego)
-                    #     historia(SCREEN, configJuego["personaje"])
-                    #     configJuego["historia"] = False
+                    if configJuego["historia"]:
+                        pantalla_de_carga(SCREEN, configJuego)
+                        historia(SCREEN, configJuego["personaje"])
+                        configJuego["historia"] = False
                     SCREEN , configJuego, LvlsInfo, elementosFondo = niveles(SCREEN , configJuego, LvlsInfo, elementosFondo)
                     pygame.display.set_caption(idioma[configJuego["Idioma"]]["MenuInicial"]["Titulo"])
                 if OPTIONS_BUTTON.checkForInput(MENU_MOUSE_POS):
