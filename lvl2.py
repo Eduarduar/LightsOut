@@ -204,6 +204,70 @@ def reiniciar(personaje):
         "piso": 1
     }
 
+# cuando se apague un foco habra una pequeña posibilidad de soltar un powerup
+def soltarPowerUp():
+    """
+    Función que suelta un power-up aleatorio en el juego. 
+    El power-up puede ser de dos tipos: reducirConsumo o Velocidad.
+    Si el power-up es de tipo reducirConsumo, se activa el estado "reducirConsumo" y se reduce el consumo de energía del jugador.
+    Si el power-up es de tipo Velocidad, se activa el estado "Velocidad" y se aumenta la velocidad del jugador.
+    """
+    global powerUps
+    global subida
+    activo = False
+    soltarPowerUp = random.randint(1, 100)
+    if soltarPowerUp <= powerUps["probabilidad"]:
+        soltarPowerUp = random.randint(1, 100)
+        if soltarPowerUp <= 50:
+            if powerUps["estados"]["reducirConsumo"]["activo"] != True and powerUps["estados"]["reducirConsumo"]["suelto"] != True:
+                powerUps["estados"]["reducirConsumo"]["PX"] = random.randint(200, 1000)
+                powerUps["estados"]["reducirConsumo"]["piso"] = random.randint(1, 2)
+                powerUps["estados"]["reducirConsumo"]["activo"] = False
+                powerUps["estados"]["reducirConsumo"]["suelto"] = True
+                powerUps["estados"]["reducirConsumo"]["tiempo"] = 10
+                subida = 2
+                activo = True
+        if soltarPowerUp > 50 or activo == False:
+            if powerUps["estados"]["Velocidad"]["activo"] != True and powerUps["estados"]["Velocidad"]["suelto"] != True:
+                powerUps["estados"]["Velocidad"]["PX"] = random.randint(200, 1000)
+                powerUps["estados"]["Velocidad"]["piso"] = random.randint(1, 2)
+                powerUps["estados"]["Velocidad"]["activo"] = False
+                powerUps["estados"]["Velocidad"]["suelto"] = True
+                powerUps["estados"]["Velocidad"]["tiempo"] = 10
+                activo = True
+
+# funcion que controla los powerUps y los coloca en pantalla
+def pintarPowerUps(SCREEN, segundero):
+    """
+    Dibuja los power-ups en la pantalla y verifica si el personaje los toca para activarlos.
+    Si un power-up es activado, se resta un segundo al tiempo que dura activo cada segundo.
+    Si el tiempo llega a cero, el power-up se desactiva.
+    """
+    global powerUps
+    global infoPersonaje
+    global segundoAnterior
+    for powerUp in powerUps["estados"].items():
+        if powerUp[1]["suelto"] == True:
+            if powerUp[1]["activo"] == False:
+                # verificamos si el personaje toco el powerUp
+                if (infoPersonaje["PX"] >= powerUp[1]["PX"] - infoPersonaje["ancho"] and infoPersonaje["PX"] <= powerUp[1]["PX"] + 40) and ( infoPersonaje["piso"] == powerUp[1]["piso"]):
+                        powerUp[1]["activo"] = True
+                        powerUp[1]["suelto"] = False
+                        powerUps["powerUpsActivos"] += 1
+                elif powerUp[1]["piso"] == 1:
+                    SCREEN.blit(imgs["powerUps"][powerUp[1]["nombre"]], (powerUp[1]["PX"], 530 + (powerUp[1]["alto"] / 2)))
+                else:
+                    SCREEN.blit(imgs["powerUps"][powerUp[1]["nombre"]], (powerUp[1]["PX"], 350 + (powerUp[1]["alto"]) / 2))
+        else:  
+            if powerUp[1]["activo"] == True:
+                if segundero != segundoAnterior: # verificamos si el tiempo cambio
+                    powerUp[1]["tiempo"] -= 1 # si el tiempo cambio restamos un segundo
+                    if powerUp[1]["tiempo"] <= 0: # verificamos si el powerUp se acabo
+                        powerUp[1]["tiempo"] = 10
+                        powerUp[1]["activo"] = False
+                        powerUp[1]["suelto"] = False
+                        powerUps["powerUpsActivos"] -= 1
+
 # funcion para mostrar una pantalla de pausa antes de iniciar
 def pausaInicio(SCREEN, configJuego):
     """
@@ -342,7 +406,7 @@ def moverPersonaje(SCREEN):
                     foco[1]["estado"] = 0
                     focos["focosEncendidos"] -= 1
                     focos["focosApagados"] += 1
-                    # soltarPowerUp()
+                    soltarPowerUp()
                     break
         pintarPersonaje(SCREEN, accion="apagar")
 
@@ -473,6 +537,8 @@ def pintarFocos(SCREEN, segundero):
             SCREEN.blit(imgs[f"bombilla{foco[1]['estado']}"], foco[1]["posicion"])
         else:
             SCREEN.blit(imgs[f"sombras"][f"sombra{foco[1]['numero']}"], (0, 0))
+
+# funcion para mostrar una pantalla de game over
 def perder(SCREEN, configJuego, LvlsInfo, elementosFondo):
     global focos
     pygame.mixer.Sound("assets/sounds/perder.ogg").play() # reproducimos el sonido en bucle
@@ -522,6 +588,7 @@ def perder(SCREEN, configJuego, LvlsInfo, elementosFondo):
                 pygame.quit()
                 sys.exit()
 
+# funcion para mostrar una pantalla de ganaste
 def ganar(SCREEN, configJuego, LvlsInfo, elementosFondo):
     global focos
     # calvulamos el score
@@ -609,6 +676,7 @@ def pintarTiempo(SCREEN, tiempoPasado, configJuego):
 
     return relojF
 
+# funcion para mostrar el nivel 2
 def pantalla_lvl2(SCREEN , configJuego, LvlsInfo, elementosFondo):
     """
     Función encargada de mostrar la pantalla del nivel 2 del juego LightsOut.
@@ -689,6 +757,8 @@ def pantalla_lvl2(SCREEN , configJuego, LvlsInfo, elementosFondo):
         btnOpciones.changeColor(posicionMause) 
         # Colocamos el botón de pausa
         btnOpciones.update(SCREEN) 
+
+        pintarPowerUps(SCREEN, segundero) # actualizamos los estados de los powerUps
 
         # Movemos y pintamos el personaje
         moverPersonaje(SCREEN) 
