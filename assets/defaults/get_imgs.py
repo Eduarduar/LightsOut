@@ -206,6 +206,7 @@ def imgs_lvl2(idioma):
     w1 = pygame.image.load("assets/img/botones/W1.png")
     w2 = pygame.image.load("assets/img/botones/W2.png")
     instrucciones = pygame.image.load("assets/img/lvl2/instrucciones.png")
+    ventanas = pygame.image.load("assets/img/lvl2/ventanasOn.png")
     
 
     if idioma == "es":
@@ -246,7 +247,8 @@ def imgs_lvl2(idioma):
             "velocidad": rayo,
             "reducirConsumo": reloj
         },
-        "interface": interface
+        "interface": interface,
+        "ventanas": ventanas
     }
 
     return imgs
