@@ -856,7 +856,7 @@ def pantalla_lvl3(SCREEN , configJuego, LvlsInfo, elementosFondo):
 
         # creamos los power-ups
         powerUps = {
-            "probabilidad": 100,
+            "probabilidad": 25,
             "powerUp1": PowerUp("rayo", 10, 50),
             "powerUp2": PowerUp("consumo", 10, 50)
         }
