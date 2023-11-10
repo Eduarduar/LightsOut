@@ -80,6 +80,9 @@
                 "1": "No dejes que el medidor de energía",
                 "2": "alcance su máximo..."
             }
+        },
+        "Historia": {
+            "Titulo": "Historia"
         }
     },
     "en": {
@@ -163,6 +166,9 @@
                 "1": "Don't let the energy meter reach its",
                 "2": "maximum..."
             }
+        },
+        "Historia": {
+            "Titulo": "History"
         }
     }
 }

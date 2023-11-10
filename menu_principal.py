@@ -74,8 +74,8 @@ def menu_principal(SCREEN , configJuego, LvlsInfo, elementosFondo):
                 if PLAY_BUTTON.checkForInput(MENU_MOUSE_POS):
                     if configJuego["historia"]:
                         pantalla_de_carga(SCREEN, configJuego)
-                        historia(SCREEN, configJuego["personaje"])
                         configJuego["historia"] = False
+                    historia(SCREEN, configJuego["personaje"], configJuego["Idioma"])
                     SCREEN , configJuego, LvlsInfo, elementosFondo = niveles(SCREEN , configJuego, LvlsInfo, elementosFondo)
                     pygame.display.set_caption(idioma[configJuego["Idioma"]]["MenuInicial"]["Titulo"])
                 if OPTIONS_BUTTON.checkForInput(MENU_MOUSE_POS):
