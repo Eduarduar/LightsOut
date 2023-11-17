@@ -436,7 +436,12 @@ def moverPersonaje(SCREEN,Fusibles):
         elif segundoAccion != tiempoPasado:
             infoPersonaje["piso"] = 1
             infoPersonaje["PY"] += 180
-        segundoAccion = tiempoPasado
+
+        if Fusibles.estado == 1:
+            segundoAccion = tiempoPasado
+        elif Fusibles.estado == 0:
+            segundoAccion += 1
+            
         pintarPersonaje(SCREEN)   
 
     # Tecla Espacio
@@ -751,11 +756,10 @@ def pantalla_lvl2(SCREEN , configJuego, LvlsInfo, elementosFondo):
     global focos
     global color
     global imgs
+    acenderFlecha = False
+    posFlecha = 450
     ray = False
     rayo = 0
-
-    posFlecha = 450
-    acenderFlecha = False
     
     Fusibles = Fusible()
 
