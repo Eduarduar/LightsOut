@@ -207,6 +207,7 @@ def imgs_lvl2(idioma):
     w2 = pygame.image.load("assets/img/botones/W2.png")
     instrucciones = pygame.image.load("assets/img/lvl2/instrucciones.png")
     ventanas = pygame.image.load("assets/img/lvl2/ventanasOn.png")
+    flecha = pygame.transform.scale(pygame.image.load("assets/img/flecha.png"), (30, 50))
     
 
     if idioma == "es":
@@ -227,6 +228,7 @@ def imgs_lvl2(idioma):
     }
 
     imgs = {
+        "flecha": flecha,
         "caja": Caja,
         "fondo": fondo,
         "sombra_lvl2": sombra_lvl2,
