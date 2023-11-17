@@ -6,7 +6,7 @@ print("Lights Out - v0.1.0")
 
 configJuego = {
     "Idioma": "es",
-    "Volumen": 0.50,
+    "Volumen": 0.05,
     "indiceMusic": 0,
     "historia": True,
     "personaje": "hombre",
