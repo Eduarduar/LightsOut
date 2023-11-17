@@ -596,13 +596,13 @@ def pintarFocos(SCREEN, segundero, Fusibles):
             SCREEN.blit(imgs[f"sombras"][f"sombra{foco[1]['numero']}"], (0, 0))
 
 # funcion para mostrar una pantalla de game over
-def perder(SCREEN, configJuego, LvlsInfo, elementosFondo):
+def perder(SCREEN, configJuego, LvlsInfo, elementosFondo, Fusibles):
     global focos
     pygame.mixer.Sound("assets/sounds/perder.ogg").play() # reproducimos el sonido en bucle
     configJuego["Volumen"] /= 4 # bajamos el volumen de la musica
     pygame.mixer.music.set_volume(configJuego["Volumen"])
     pausa = True
-    moverPersonaje(SCREEN)
+    moverPersonaje(SCREEN, Fusibles)
     for foco in focos["focosEstado"].items(): # recorremos los focos
             SCREEN.blit(imgs["bombilla0"], foco[1]["posicion"]) # colocamos el foco en pantalla
             SCREEN.blit(imgs[f"sombras"][f"sombra{foco[1]['numero']}"], (0, 0))
@@ -646,7 +646,7 @@ def perder(SCREEN, configJuego, LvlsInfo, elementosFondo):
                 sys.exit()
 
 # funcion para mostrar una pantalla de ganaste
-def ganar(SCREEN, configJuego, LvlsInfo, elementosFondo):
+def ganar(SCREEN, configJuego, LvlsInfo, elementosFondo, Fusibles):
     global focos
     # calvulamos el score
 
@@ -753,6 +753,9 @@ def pantalla_lvl2(SCREEN , configJuego, LvlsInfo, elementosFondo):
     global imgs
     ray = False
     rayo = 0
+
+    posFlecha = 450
+    acenderFlecha = False
     
     Fusibles = Fusible()
 
@@ -780,6 +783,7 @@ def pantalla_lvl2(SCREEN , configJuego, LvlsInfo, elementosFondo):
         Fusibles.obtenerMomentos(random.randint(10, 110))
 
     Fusibles.ordenarMomentos()
+
 
     Fusibles.obtenerMomentos(5)
 
@@ -862,7 +866,7 @@ def pantalla_lvl2(SCREEN , configJuego, LvlsInfo, elementosFondo):
         # Colocamos el botón de pausa
         btnOpciones.update(SCREEN) 
 
-        pintarPowerUps(SCREEN, segundero) # actualizamos los estados de los powerUps
+        pintarPowerUps(SCREEN, segundero) # actualizamos los estados de los powerUps..
 
         # Movemos y pintamos el personaje
         moverPersonaje(SCREEN, Fusibles) 
@@ -898,14 +902,27 @@ def pantalla_lvl2(SCREEN , configJuego, LvlsInfo, elementosFondo):
         # Colocamos la sombra del nivel
         SCREEN.blit(imgs["sombra_lvl2"], (0,0)) 
 
+        if Fusibles.estado == 0:
+                SCREEN.blit(imgs[f"flecha"], (930, posFlecha))
+
+        if posFlecha <= 430:
+            acenderFlecha = False
+        elif posFlecha >= 450:
+            acenderFlecha = True
+
+        if acenderFlecha == False:
+            posFlecha += 2
+        elif acenderFlecha == True:
+            posFlecha -= 2
+
         # Actualizamos la pantalla
         pygame.display.flip()
 
         if relojF <= 0 and focos["focosFundidos"] < 5: # verificamos si el jugador gano
-            SCREEN , configJuego, LvlsInfo, elementosFondo = ganar(SCREEN, configJuego, LvlsInfo, elementosFondo)
+            SCREEN , configJuego, LvlsInfo, elementosFondo = ganar(SCREEN, configJuego, LvlsInfo, elementosFondo, Fusibles)
             return SCREEN , configJuego, LvlsInfo, elementosFondo
         
         if consumoTotal >= LimiteConsumo or(relojF > 0 and focos["focosFundidos"] == 5): # verificamos si el jugador perdio
-            SCREEN , configJuego, LvlsInfo, elementosFondo = perder(SCREEN, configJuego, LvlsInfo, elementosFondo)
+            SCREEN , configJuego, LvlsInfo, elementosFondo = perder(SCREEN, configJuego, LvlsInfo, elementosFondo, Fusibles)
             return SCREEN , configJuego, LvlsInfo, elementosFondo
         
