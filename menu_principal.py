@@ -46,10 +46,13 @@ def menu_principal(SCREEN , configJuego, LvlsInfo, elementosFondo):
         # Obtenemos la posición del mouse
         MENU_MOUSE_POS = pygame.mouse.get_pos()
 
-        # Renderizamos el título del menú
-        MENU_TEXT = get_font(70).render(idioma[configJuego["Idioma"]]["Titulo"], True, "#97ffc6")
-        MENU_RECT = MENU_TEXT.get_rect(center=(640, 100))
-        SCREEN.blit(MENU_TEXT, MENU_RECT)
+        # Cargamos la imagen del título del menú
+        MENU_IMAGE = pygame.image.load("assets/img/titulo.png")
+        # Obtenemos el rectángulo de la imagen y lo posicionamos en el centro de la pantalla
+        MENU_RECT = MENU_IMAGE.get_rect(center=(640, 100))
+
+        # Dibujamos la imagen en la pantalla
+        SCREEN.blit(MENU_IMAGE, MENU_RECT)
 
         # Creamos los botones del menú
         PLAY_BUTTON = Button(image1=pygame.transform.scale(imgs["botones"][configJuego["Idioma"]]["jugar"]["normal"], (550, 100)), pos=(640, 250),  text_input="", font=get_font(75), base_color="#d7fcd4", hovering_color="#48ba84", image2=pygame.transform.scale(imgs["botones"][configJuego["Idioma"]]["jugar"]["presionado"], (550, 100)))
