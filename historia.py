@@ -1,7 +1,8 @@
 import pygame, sys
 from assets.defaults.idioma import cargar_idioma
-from intro import intro
+from moviepy.editor import VideoFileClip
 from assets.defaults.pyvidplayer import Video 
+from intro import intro
 
 reloj = pygame.time.Clock()
 idioma = cargar_idioma()
@@ -9,11 +10,14 @@ idioma = cargar_idioma()
 def historia(SCREEN, sexo, lenguaje):
     reloj.tick(30)
 
+    video = VideoFileClip(f"./assets/video/{sexo}_{lenguaje}.mp4")
+    duración = video.duration
     vid = Video(f"./assets/video/{sexo}_{lenguaje}.mp4")
     vid.set_size((1280, 720))
 
     # Esperar a que el video termine
-    while True:
+    tiempo_transcurrido = 0
+    while tiempo_transcurrido < duración:
         for event in pygame.event.get():
 
             if event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONDOWN:
@@ -27,3 +31,6 @@ def historia(SCREEN, sexo, lenguaje):
 
         vid.draw(SCREEN, (0,0))
         pygame.display.flip()
+        tiempo_transcurrido += reloj.tick(30) / 1000
+
+    vid.close()
