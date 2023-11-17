@@ -788,9 +788,6 @@ def pantalla_lvl2(SCREEN , configJuego, LvlsInfo, elementosFondo):
 
     Fusibles.ordenarMomentos()
 
-
-    Fusibles.obtenerMomentos(5)
-
     while True:
 
         # Obtenemos la posición del mouse

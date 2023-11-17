@@ -833,6 +833,9 @@ def pantalla_lvl3(SCREEN , configJuego, LvlsInfo, elementosFondo):
         # improtamos imagenes
         imgs = imgs_lvl3(configJuego["Idioma"], configJuego["personaje"])
 
+        posFlecha = 0
+        acenderFlecha = False
+
         # creamos los objetos
         
         btnPausa = Button(image1=None, pos=(1047,57), text_input="||", font=get_font(30), base_color="White", hovering_color="#555f68")
@@ -1025,6 +1028,19 @@ def pantalla_lvl3(SCREEN , configJuego, LvlsInfo, elementosFondo):
         SCREEN.blit(fundidosText, fundidosRect)
 
         SCREEN.blit(imgs["sombras"], (0, 0))
+
+        if Fusibles.estado == 0:
+                SCREEN.blit(imgs[f"flecha"], (990, posFlecha))
+
+        if posFlecha <= 515:
+            acenderFlecha = False
+        elif posFlecha >= 535:
+            acenderFlecha = True
+
+        if acenderFlecha == False:
+            posFlecha += 2
+        elif acenderFlecha == True:
+            posFlecha -= 2
 
         pygame.display.flip()
 

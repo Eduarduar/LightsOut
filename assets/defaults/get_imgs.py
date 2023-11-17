@@ -267,6 +267,7 @@ def imgs_lvl3(idioma, sexo):
     puerta = pygame.image.load("assets/img/lvl3/puertaon.png")
     oscuro = pygame.image.load("assets/img/oscuro.png")
     ventanas = pygame.image.load("assets/img/lvl3/ventanas.png")
+    flecha = pygame.transform.scale(pygame.image.load("assets/img/flecha.png"), (30, 50))
 
     if idioma == "es":
         espacio1 = pygame.image.load("assets/img/botones/Espacio1.png")
@@ -276,6 +277,7 @@ def imgs_lvl3(idioma, sexo):
         espacio2 = pygame.image.load("assets/img/botones/Space2.png")
 
     imgs = {
+        "flecha": flecha,
         "w1": w1,
         "w2": w2,
         "rayo": rayo,
