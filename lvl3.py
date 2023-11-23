@@ -684,7 +684,8 @@ def prenderFocoAzar(focos, Contador):
         pygame.mixer.Sound("assets/sounds/prenderFoco.wav").play() # Sonido de encender foco
 
 # función que muestra una pantalla de perder
-def perder(SCREEN, configJuego, focos, imgs, Jugador):
+def perder(SCREEN, configJuego, focos, imgs, Jugador, Contador, BarraConsumo, Fusibles):
+    global focosEncendidos, focosApagados, focosFundidos, segundoUltimoRayo, accion, rayo, ray, ultimoFoco, segundoUltimoFoco, teclaEstado
     pygame.mixer.Sound("assets/sounds/perder.ogg").play() # reproducimos el sonido en bucle
     configJuego["Volumen"] /= 4 # bajamos el volumen de la musica
     pygame.mixer.music.set_volume(configJuego["Volumen"])
@@ -729,6 +730,22 @@ def perder(SCREEN, configJuego, focos, imgs, Jugador):
                 configJuego["Volumen"] *= 4
                 pygame.mixer.music.set_volume(configJuego["Volumen"])
                 pygame.mixer.Sound("assets/sounds/viento.wav").stop()
+                for foco in focos.values():
+                    foco.reiniciar()
+                Jugador.reiniciar()
+                Contador.reiniciar()
+                BarraConsumo.reiniciar()
+                Fusibles.reiniciar()
+                focosApagados = 0
+                focosFundidos = 0
+                focosEncendidos = 0
+                teclaEstado = 1
+                ultimoFoco = 0
+                segundoUltimoFoco = 0
+                segundoUltimoRayo = 0
+                accion = False
+                ray = False
+                rayo = 0
                 return SCREEN , configJuego
             if event.type == pygame.QUIT:
                 intro(SCREEN, accion = "cerrar")
@@ -736,7 +753,7 @@ def perder(SCREEN, configJuego, focos, imgs, Jugador):
                 sys.exit()
 
 # funcion para mostrar una pantalla de ganaste
-def ganar(SCREEN, configJuego, LvlsInfo, imgs):
+def ganar(SCREEN, configJuego, LvlsInfo, imgs, Jugador, Contador, BarraConsumo, Fusibles, focos):
     """
     Función que muestra la pantalla de victoria del nivel 3 del juego LightsOut.
     Calcula el puntaje del jugador y muestra la pantalla de victoria con el puntaje obtenido.
@@ -745,6 +762,7 @@ def ganar(SCREEN, configJuego, LvlsInfo, imgs):
     Si el jugador presiona una tecla, se actualiza la información del nivel completado y disponible, se sube el volumen de la música y se retorna la información actualizada.
     Si el jugador cierra la ventana, se cierra el juego.
     """
+    global focosEncendidos, focosApagados, focosFundidos, segundoUltimoRayo, accion, rayo, ray, ultimoFoco, segundoUltimoFoco, teclaEstado
     # calvulamos el score
     score = (focosApagados * 50) - (focosFundidos * 100)
 
@@ -798,6 +816,25 @@ def ganar(SCREEN, configJuego, LvlsInfo, imgs):
                 # subimos el volumen de la musica
                 configJuego["Volumen"] *= 4
                 pygame.mixer.music.set_volume(configJuego["Volumen"])
+                for foco in focos.values():
+                    foco.reiniciar()
+                Jugador.reiniciar()
+                Contador.reiniciar()
+                BarraConsumo.reiniciar()
+                Fusibles.reiniciar()
+                focosApagados = 0
+                focosFundidos = 0
+                focosEncendidos = 0
+                teclaEstado = 1
+                ultimoFoco = 0
+                segundoUltimoFoco = 0
+                segundoUltimoRayo = 0
+                accion = False
+                ray = False
+                rayo = 0
+                for o in range(3):
+                    Fusibles.obtenerMomentos(random.randint(10, 110))
+                Fusibles.ordenarMomentos()
                 return SCREEN , configJuego, LvlsInfo
             if event.type == pygame.QUIT:
                 intro(SCREEN, accion = "cerrar")
@@ -816,7 +853,7 @@ def pantalla_lvl3(SCREEN , configJuego, LvlsInfo, elementosFondo):
     - elementosFondo: diccionario con los elementos de fondo del juego.
 
     Returns:
-    - None
+    - None 
     """
     # cargamos la música si no está cargada
     if configJuego["indiceMusic"] != 2:
@@ -833,7 +870,7 @@ def pantalla_lvl3(SCREEN , configJuego, LvlsInfo, elementosFondo):
         # improtamos imagenes
         imgs = imgs_lvl3(configJuego["Idioma"], configJuego["personaje"])
 
-        posFlecha = 0
+        posFlecha = 515
         acenderFlecha = False
 
         # creamos los objetos
@@ -893,6 +930,25 @@ def pantalla_lvl3(SCREEN , configJuego, LvlsInfo, elementosFondo):
                     pygame.display.set_caption(idioma[configJuego["Idioma"]]["Nivel1"]["Titulo"])
                     if accionM == "salir":
                         pantalla_de_carga(SCREEN, configJuego)
+                        for foco in focos.values():
+                            foco.reiniciar()
+                        Jugador.reiniciar()
+                        Contador.reiniciar()
+                        BarraConsumo.reiniciar()
+                        Fusibles.reiniciar()
+                        focosApagados = 0
+                        focosFundidos = 0
+                        focosEncendidos = 0
+                        teclaEstado = 1
+                        ultimoFoco = 0
+                        segundoUltimoFoco = 0
+                        segundoUltimoRayo = 0
+                        accion = False
+                        ray = False
+                        rayo = 0
+                        for o in range(3):
+                            Fusibles.obtenerMomentos(random.randint(10, 110))
+                        Fusibles.ordenarMomentos()
                         return SCREEN , configJuego, LvlsInfo, elementosFondo
                     elif accionM == "reiniciar":
                         pausaInicio(SCREEN, configJuego, imgs)
@@ -910,6 +966,8 @@ def pantalla_lvl3(SCREEN , configJuego, LvlsInfo, elementosFondo):
                         segundoUltimoFoco = 0
                         segundoUltimoRayo = 0
                         accion = False
+                        ray = False
+                        rayo = 0
                         for o in range(3):
                             Fusibles.obtenerMomentos(random.randint(10, 110))
                         Fusibles.ordenarMomentos()
@@ -921,6 +979,25 @@ def pantalla_lvl3(SCREEN , configJuego, LvlsInfo, elementosFondo):
                     pygame.display.set_caption(idioma[configJuego["Idioma"]]["Nivel1"]["Titulo"])
                     if accionM == "salir":
                         pantalla_de_carga(SCREEN, configJuego)
+                        for foco in focos.values():
+                            foco.reiniciar()
+                        Jugador.reiniciar()
+                        Contador.reiniciar()
+                        BarraConsumo.reiniciar()
+                        Fusibles.reiniciar()
+                        focosApagados = 0
+                        focosFundidos = 0
+                        focosEncendidos = 0
+                        teclaEstado = 1
+                        ultimoFoco = 0
+                        segundoUltimoFoco = 0
+                        segundoUltimoRayo = 0
+                        accion = False
+                        ray = False
+                        rayo = 0
+                        for o in range(3):
+                            Fusibles.obtenerMomentos(random.randint(10, 110))
+                        Fusibles.ordenarMomentos()
                         return SCREEN , configJuego, LvlsInfo, elementosFondo
                     elif accionM == "reiniciar":
                         pausaInicio(SCREEN, configJuego, imgs)
@@ -1045,11 +1122,11 @@ def pantalla_lvl3(SCREEN , configJuego, LvlsInfo, elementosFondo):
         pygame.display.flip()
 
         if BarraConsumo.consumoTotal >= BarraConsumo.consumoMaximo or(Contador.tiempo > 0 and focosFundidos == 8): # verificamos si el jugador perdio
-            SCREEN , configJuego = perder(SCREEN, configJuego, focos, imgs, Jugador)
+            SCREEN , configJuego = perder(SCREEN, configJuego, focos, imgs, Jugador, Contador, BarraConsumo, Fusibles)
             return SCREEN , configJuego, LvlsInfo, elementosFondo
 
         if Contador.tiempo <= 0 and focosFundidos < 8: # verificamos si el jugador gano
-            SCREEN , configJuego, LvlsInfo = ganar(SCREEN, configJuego, LvlsInfo, imgs)
+            SCREEN , configJuego, LvlsInfo = ganar(SCREEN, configJuego, LvlsInfo, imgs, Jugador, Contador, BarraConsumo, Fusibles, focos)
             return SCREEN , configJuego, LvlsInfo, elementosFondo
 
         if i == 0:
