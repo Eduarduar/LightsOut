@@ -27,3 +27,73 @@ para remplazar los quemados por no usar focos de mayor duración.
 
 El objectivo de este juego es fomentar el cuidado de la luz electrica y reducir el consumo irresponsable de algunos suministros
 como en este caso los focos y la energía electrica.
+
+# Requisitos de Instalación
+
+Asegúrate de tener Python instalado en tu sistema antes de comenzar. Si no lo tienes instalado, puedes descargarlo desde [python.org](https://www.python.org/).
+
+### Python
+
+Si no lo tienes instalado, sigue las instrucciones a continuación.
+
+### Instalación de Python
+
+Puedes descargar e instalar Python desde [python.org](https://www.python.org/).
+
+#### Usuarios de Linux
+
+```bash
+sudo apt-get update
+```
+```bash
+sudo apt-get install python3
+```
+
+### Usuarios de MacOs
+
+```bash
+brew update
+```
+```bash
+brew install python3
+```
+
+### Usuarios de Windows
+
+Descarga el instalador de Python desde python.org y sigue las instrucciones del instalador.
+Una vez instalado Python, puedes verificar la instalación ejecutando el siguiente comando en tu terminal o símbolo del sistema:
+
+Puedes verificar si tienes Python instalado ejecutando el siguiente comando en tu terminal:
+Si Python está instalado, deberías ver la versión actual.
+
+```bash
+python --version
+```
+
+# Instalación de Dependencias
+
+Para ejecutar este proyecto, necesitarás instalar las siguientes librerías de Python. Puedes hacerlo utilizando el gestor de paquetes pip, que suele instalarse automáticamente con Python.
+
+### Pygame
+```bash
+pip install pygame
+```
+
+### MoviePy
+```bash
+pip install moviepy
+```
+
+### Pyvidplayer
+```bash
+pip install pyvidplayer
+```
+
+Asegúrate de ejecutar estos comandos en un entorno virtual o con los permisos adecuados para evitar conflictos con otras dependencias del sistema.
+
+# Ejecución del Proyecto
+
+Una vez que hayas instalado Python y las librerías requeridas, puedes ejecutar el proyecto utilizando el siguiente comando dentro de la carpeta del proyecto:
+```bash
+python main.py
+```
