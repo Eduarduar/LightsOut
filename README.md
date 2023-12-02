@@ -38,7 +38,11 @@ Si no lo tienes instalado, sigue las instrucciones a continuación.
 
 ### Instalación de Python
 
-Puedes descargar e instalar Python desde [python.org](https://www.python.org/).
+### Usuarios de Windows
+
+Descarga el instalador de Python desde [python.org](https://www.python.org/) y sigue las instrucciones del instalador.
+Una vez instalado Python, puedes verificar la instalación ejecutando el siguiente comando en tu terminal o símbolo del sistema:
+
 
 #### Usuarios de Linux
 
@@ -58,21 +62,26 @@ brew update
 brew install python3
 ```
 
-### Usuarios de Windows
-
-Descarga el instalador de Python desde python.org y sigue las instrucciones del instalador.
-Una vez instalado Python, puedes verificar la instalación ejecutando el siguiente comando en tu terminal o símbolo del sistema:
-
 Puedes verificar si tienes Python instalado ejecutando el siguiente comando en tu terminal:
 Si Python está instalado, deberías ver la versión actual.
 
+### WINDOWNS
 ```bash
 python --version
+```
+
+### Otros SO
+```bash
+python3 --version
 ```
 
 # Instalación de Dependencias
 
 Para ejecutar este proyecto, necesitarás instalar las siguientes librerías de Python. Puedes hacerlo utilizando el gestor de paquetes pip, que suele instalarse automáticamente con Python.
+
+Si no lo tienes puedes ir a [¿Como instalar "pip"?][https://tecnonucleous.com/2018/01/28/como-instalar-pip-para-python-en-windows-mac-y-linux/] y sigue los pasos dependiendo de tu sistema operativo.
+
+Si ya lo tienes instalado solo sera cuestión de que ejecutes los siguientes comando usando "pip" en caso de estar en windows y si estas en algun otro sistema operativo "pip3"
 
 ### Pygame
 ```bash
@@ -94,6 +103,11 @@ Asegúrate de ejecutar estos comandos en un entorno virtual o con los permisos a
 # Ejecución del Proyecto
 
 Una vez que hayas instalado Python y las librerías requeridas, puedes ejecutar el proyecto utilizando el siguiente comando dentro de la carpeta del proyecto:
+### Windows
 ```bash
 python main.py
+```
+### otros SO
+```bash
+python3 main.py
 ```
