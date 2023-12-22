@@ -1,14 +1,8 @@
 # Lights Out
 Proyecto Integrador (PI)
 
-# Integrantes:
-    
+# Desarrollador    
     • Arcega Rodríguez Eduardo
-    • Alanís Murguia Luis Ángel
-    • Cruz Villanueva Daniel
-    • Dominguez Marcos Jazmín
-    • Morales Ochoa Wiliam Alberto
-    • Valencia Barrios Gabriel
 
 # ¿Qué es esto?
 
