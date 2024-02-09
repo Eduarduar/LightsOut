@@ -1,9 +1,5 @@
 # Lights Out
 Proyecto Integrador (PI)
-
-# Desarrollador    
-    • Arcega Rodríguez Eduardo
-
 # ¿Qué es esto?
 
 Este proyecto se trata de un juego que mantiene una enseñansa sobre cuidar la luz ya que esta basado en el objectivo numero 12
